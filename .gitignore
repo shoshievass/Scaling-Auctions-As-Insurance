@@ -1,0 +1,35 @@
+#Ignore everything.
+*
+# Don't ignore directories.
+!*/
+#Don't ignore .gitignore and don't ignore [preferred files].
+!.gitignore
+!*.jl
+!*.do
+!*.py
+!*.m
+!*.slurm
+!*.sh
+!*.bash
+!*.r
+!*.R
+!*.stan
+!*.ipynb
+!*.sty
+!*.f
+!*.md
+!*Project.toml
+!*Manifest.toml
+!tidy/Project.toml
+!tidy/Manifest.toml
+
+!*binscattr/DESCRIPTION
+!*binscattr/NAMESPACE
+
+.Rproj.user
+.ipynb_checkpoints
+.DS_Store
+.vscode/settings.json
+Counterfactual/CARA_New_Counterfactuals/QuadProg Tutorial.ipynb
+tidy/julia-1.7.2/
+tidy/polyinterp-log.txt
