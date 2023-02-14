@@ -131,23 +131,6 @@ alpha_compare <- alpha_model_df %>%
   select(contract_no, alpha) %>%
   left_join(contracts_df)
 
-# #is the fit any better?
-alpha_compare %>%
-  ggplot(aes(x = alpha, y = alpha_mean_fit)) + geom_point() +
-  geom_abline(slope=1, color = "red", linetype = "dashed") + 
-  labs(
-    x = "alpha",
-    y = "alpha mean fitted"
-  )
-
-alpha_compare %>%
-  ggplot(aes(x = alpha, y = alpha_bar_fit)) + geom_point() +
-  geom_abline(slope=1, color = "red", linetype = "dashed") + 
-  labs(
-    x = "alpha",
-    y = "alpha bar"
-  )
-
 alpha_distribution_df <- alpha_compare %>%
   select(-alpha, -contract_no_seq_for_reg, -first_bidder_in_auction_row) %>%
   unique() %>%
@@ -191,10 +174,6 @@ bidder_type_df <- alpha_model_df %>%
 pois_gamma_reg = fepois(gamma ~ log(alpha) |contract_no, bidder_type_df)
 pois_gamma_pred = predict(pois_gamma_reg, bidder_type_df)
 
-
-gamma_pred = predict(pois_gamma_reg, bidder_type_df)
-plot(gamma_pred, bidder_type_df$gamma)
-
 pois_gamma_coef <- coef(pois_gamma_reg)[[1]]
 poisgamma_fe_df <- as.data.frame(fixef(pois_gamma_reg)) %>%
   rename(
@@ -212,13 +191,6 @@ bidder_type_df <- bidder_type_df %>%
   mutate(
     gamma_predicted = exp(proj_fe + log(alpha)*pois_gamma_coef)
   )
-
-bidder_type_df %>%
-  ggplot(aes(x = gamma, y = gamma_predicted)) +
-  geom_point() +
-  geom_abline(slope=1, intercept = 0, color = "red", linetype = "dashed") +
-  xlim(-1,2)
-
 
 gamma_dist_df <- bidder_type_df %>%
   mutate(

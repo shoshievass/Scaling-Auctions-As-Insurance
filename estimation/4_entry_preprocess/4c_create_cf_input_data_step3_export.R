@@ -1,9 +1,23 @@
+##==================================================
+##
+## Script name: 4c_create_cf_input_data_step3_export
+##
+## Project: Scaling Auctions as Insurance 
+##
+## Purpose of script: Create inputs for counterfactuals
+##
+## Input:  data/estimation_step4_cf_inputs/alphas_by_auction_with_features.csv
+##         data/estimation_step4_cf_inputs/alpha_gamma_distribution.csv
+##         data/estimation_step1_output_minfit.rdata
+##         data/estimation_step3/second_stage_estimates_summary.csv
+##
+## Output: data/estimation_step4_cf_inputs/sample_project_[contract_no].csv
+##         data/estimation_step4_cf_inputs/bridge_proj_ids_parsed.txt
+##
+##
+
 library(tidyverse)
-library(skimr)
-library(ggridges)
 
-
-## Last updated: May 26, 2022
 
 ## directory names for the counterfactuals pertaining to the same 2nd stage estimates
 cf_input_dirname = paste0("data/estimation_step4_cf_inputs/")
@@ -90,17 +104,6 @@ minimal_bridge_contract_data <- bridge_empirical_bid_data %>%
         office_total_expost = sum(office_total_expost),
         office_total_exante = sum(office_total_exante),
         proj_type = first(project_type_id)
-  )
-
-test <- minimal_bridge_contract_data %>%
-  select(
-    contract_no,
-    risky_cost_term_mean,
-    risky_cost_term_correctqa_mean,
-    risky_cost_term_variance_sans_gamma,
-    office_total_expost,
-    office_total_exante,
-    proj_type
   )
 
 minimal_bridge_contract_data_excludebig <- minimal_bridge_contract_data %>%
@@ -200,11 +203,6 @@ getSampleData <- function(sample_demo_df){
 }
 
 project_ids <- unique(bridge_empirical_bid_data$project_id_sequential)
-project_ids[2]
-
-a <- bridge_empirical_bid_data %>%
-  filter(project_id_sequential %in% project_ids[2])
-getSampleData(a)
 
 bridge_empirical_bid_data %>%
   group_by(project_id_sequential) %>%
