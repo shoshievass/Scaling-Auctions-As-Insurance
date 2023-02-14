@@ -41,7 +41,7 @@ bin_info = read_csv(
 
 ## Bin Level ##
 df_bins <- df %>%
-  left_join(bin_info) %>%
+  left_join(bin_info, by = "contract_no") %>%
   mutate(
     entry_norm_raw = (entry_pct - q),
     cdf_norm_raw = (alpha_bar_cdf - q)
