@@ -245,7 +245,6 @@ To use Gurobi, you must first install Gurobi and obtain a license. Starting Juli
 
 - `data/estimation_step4_cf_inputs/` (uses all files in this directory)
 - `data/estimation_step5_outputs/step5_entry_calibration_output.csv`
-- `data/estimation_step6_precf/calibrated_entry_params_auclevel.csv`, or
 - `data/estimation_step6_precf/calibrated_entry_params_binlevel.csv`
 
 **Output files**:
