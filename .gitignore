@@ -30,6 +30,5 @@
 .ipynb_checkpoints
 .DS_Store
 .vscode/settings.json
-Counterfactual/CARA_New_Counterfactuals/QuadProg Tutorial.ipynb
 tidy/julia-1.7.2/
 tidy/polyinterp-log.txt
