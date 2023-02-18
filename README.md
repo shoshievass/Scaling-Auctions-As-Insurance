@@ -174,7 +174,7 @@ The bash script `5-run-entry.bash` is intended to be run on a slurm cluster and 
 
 **Output files**:
 
-- `data/estimation_step5_outputs`
+- `data/estimation_step5_outputs/step5_entry_calibration_output.csv`
 
 ### Step 6: Entry parameter selection
 
