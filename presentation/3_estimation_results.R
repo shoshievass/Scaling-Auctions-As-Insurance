@@ -394,15 +394,18 @@ reg_sum = df %>%
   transmute(
     resids = (predicted_poisgamma) - (gamma),
     lg_resids = log(predicted_poisgamma) - log(gamma),
-    pct_lgresids = (lg_resids)/log(gamma) 
+    pct_lgresids = (lg_resids)/log(gamma),
+    sds_lgresids = lg_resids/sd(log(gamma)),
+    sds_resids = resids/sd(gamma)
   ) 
 
-resid_quantiles = quantile(reg_sum$resids, seq(0,1,.05))
+quantile(reg_sum$sds_resids, seq(0,1,.25))
+sd_resid_quantiles = quantile(reg_sum$sds_resids, seq(0,1,.05))
 reg_sum %>%
-  filter(resids > resid_quantiles[2] & resids < resid_quantiles[20]) %>%
-  ggplot(aes(x = pct_lgresids)) + geom_histogram() +
-  scale_x_continuous(label = scales::percent) +
-  labs(x = TeX("Log Residuals as % of Log($\\gamma)$"),
+  filter(sds_resids > sd_resid_quantiles[2] & sds_resids < sd_resid_quantiles[20]) %>%
+  ggplot(aes(x = sds_resids)) + geom_histogram() +
+  scale_x_continuous() +
+  labs(x = TeX("Residuals in units of ($\\gamma)$ standard deviations"),
        y = "Count") +
   theme_minimal() +
   theme(text = element_text(size=20),
