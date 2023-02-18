@@ -264,7 +264,7 @@ saveLastFig("fig7")
 ## But plot just the `baseline` (non-moral-hazard) results, of course ##
 
 input_dir = file.path("data", "estimation_step8_moralhazard")
-mh_results <-  read_csv(file.path(input_dir, "calibrated_entry_params_binlevel.csv"))
+mh_results <-  read_csv(file.path(input_dir, "mh_results_nocap.csv"))
 
 model_preds <- mh_results %>%
   filter(tag=="baseline-estimated")%>%
