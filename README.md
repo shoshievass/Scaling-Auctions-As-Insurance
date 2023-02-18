@@ -427,7 +427,7 @@ The script `presentation/N_appendix_estimation_results.R` produces additional fi
 - `data/estimation_step3/second_stage_estimates_summary.csv`
 - `data/estimation_step3/second_stage_estimates_bid_fit.csv`
 - `data/estimation_step3/two_stage_bootstrap_errors_paramquantilesum.csv`
-- `data/estimation_step8_moralhazard/calibrated_entry_params_binlevel.csv`
+- `data/estimation_step8_moralhazard/mh_results_nocap.csv`
 
 **Output files**:
 
