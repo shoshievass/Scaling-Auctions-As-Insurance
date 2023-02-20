@@ -223,7 +223,7 @@ Step 7 estimates the counterfactual auction outcomes for the selected entry para
 
 **Output files**:
 
-- `data/estimation_step7_counterfactuals/`
+- `data/estimation_step7_counterfactuals/` (multiple files including `calibrated_entry_params_binlevel/aggregate_results.csv` and `calibrated_entry_params_binlevel/detailed_results.csv`)
 
 ### Step 8: Moral hazard
 
@@ -249,8 +249,7 @@ To use Gurobi, you must first install Gurobi and obtain a license. Starting Juli
 
 **Output files**:
 
-- `data/estimation_step8_moralhazard/`
-- `data/estimation_step8_moralhazard/mh_results_nocap.csv`
+- `data/estimation_step8_moralhazard/` (multiple files including `mh_results_nocap.csv`)
 
 ## Presentation
 
