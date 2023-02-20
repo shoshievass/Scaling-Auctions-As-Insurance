@@ -250,6 +250,7 @@ To use Gurobi, you must first install Gurobi and obtain a license. Starting Juli
 **Output files**:
 
 - `data/estimation_step8_moralhazard/`
+- `data/estimation_step8_moralhazard/mh_results_nocap.csv`
 
 ## Presentation
 

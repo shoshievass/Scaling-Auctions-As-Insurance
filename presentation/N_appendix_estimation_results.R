@@ -51,24 +51,12 @@ load(file.path("data","estimation_step1_output_minfit.rdata"))
 ### 2nd stage estimates
 gmm_output <- read_csv(file.path("data","estimation_step3","second_stage_estimates_summary.csv"))
 
-
 ## Load 2nd stage estimates ##
 gmm_est_suffix = "_summary.csv"
 gmm_bid_suffix = "_bid_fit.csv"
-# gmm_alpha_i_suffix = "_alpha_i.csv"
-# gmm_gamma_i_suffix = "_gamma_i.csv"
-# gmm_beta_alpha_suffix = "_beta_alpha.csv"
-# gmm_beta_gamma_suffix = "_beta_gamma.csv"
-# gmm_inv_gamma_intercept_suffix = "_gamma_intercept.csv"
 
 gmm_output <- read_csv(file.path("data","estimation_step3",paste0("second_stage_estimates", gmm_est_suffix)))
 gmm_bid_fits <- read_csv(file.path("data","estimation_step3",paste0("second_stage_estimates", gmm_bid_suffix)))
-
-## We don't report these ##
-# gmm_alpha_is <- read_csv(file.path("data","estimation_step3",paste0("second_stage_estimates", gmm_alpha_i_suffix)))
-# gmm_alpha_betas <- read_csv(file.path("data","estimation_step3",paste0("second_stage_estimates", gmm_beta_alpha_suffix)))
-# gmm_gamma_is <- read_csv(file.path("data","estimation_step3",paste0("second_stage_estimates", gmm_gamma_i_suffix)))
-# gmm_gamma_betas <- read_csv(file.path("data","estimation_step3",paste0("second_stage_estimates", gmm_beta_gamma_suffix)))
 
 ## directory names for outputs
 output_dir = file.path("outputs","estimation_results")

@@ -73,7 +73,7 @@ function list_files()
 
         results[!, "directory"] .= basename(dir)
 
-        CSV.write(joinpath(outdir, "$(basename(dir)).csv"), results)
+        CSV.write(joinpath(outdir, "mh_results_nocap.csv"), results)
     end
 
     return results

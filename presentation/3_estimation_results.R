@@ -27,6 +27,7 @@ library(latex2exp)
 library(ggthemes)
 library(kableExtra)
 library(fixest)
+library(mltools)
 
 # Create .library if it doesn't exist
 if (!dir.exists("presentation/.library")) {
