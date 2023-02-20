@@ -29,6 +29,7 @@ library(latex2exp)
 library(RColorBrewer)
 library(devtools)
 library(lfe)
+library(mltools)
 
 # Create .library if it doesn't exist
 if (!dir.exists("presentation/.library")) {
