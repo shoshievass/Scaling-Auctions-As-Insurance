@@ -18,12 +18,6 @@ include(joinpath(project_dir, "CARA_Estimation_Structs.jl"))
 stage1_id = 1
 stage2_id = 1
 bootstrap_out_dir = joinpath(estimation_results_dir, "second_stage_estimates_bootstrap_raw_results")
-# out_dir = joinpath(bootstrap_out_dir, "bs_" * "$stage1_id")
-
-# mkup_df = DataFrame(CSV.File(joinpath(out_dir, "$stage2_id" * "_mkp_df.csv")));
-# first(mkup_df)
-
-# med_alpha = median(mkup_df[!, :gamma])
 
 
 function enter_sumstat_into_dict!(dict_input, statname, stat)
@@ -135,10 +129,6 @@ function go()
 
         for stage2_id in 1:100
             println("Stage 1: $stage1_id, Stage 2: $stage2_id")
-            #         alpha_i_df = DataFrame(CSV.File(out_dir * "$stage2_id" * "_alpha_i.csv"))
-            #         beta_alpha_df = DataFrame(CSV.File(out_dir * "$stage2_id" * "_beta_alpha.csv"))
-            #         beta_gamma_df = DataFrame(CSV.File(out_dir * "$stage2_id" * "_beta_gamma.csv"))
-            #         gamma_intercept_d`f = DataFrame(CSV.File(out_dir * "$stage2_id" * "_gamma_intercept.csv"));
             writepath = joinpath(out_dir, "$stage2_id" * "_mkp_df.csv")
             mkup_df = DataFrame(CSV.File(writepath))
 
@@ -273,7 +263,6 @@ function go()
 
     ## get original parameter estimates ##
     estimate_id = joinpath(bootstrap_out_dir, "bs_0", "0")
-    # estimate_id = OG_bootstrap_out_dir * "estimates/individual_gamma_june2022" 
 
     param_sum_dict = Dict{Any,Any}()
 
@@ -353,7 +342,6 @@ function go()
         bs_97p5ptiles_arr[ind] = bs_upper_95ci_dict[param]
     end
 
-    # note = "two_stage_bootstrap_errors_july2022"
     note = "two_stage_bootstrap_errors_paramquantilesum"
     bootstrap_sd_df = DataFrame(parameter=bs_param_name_arr,
         estimate=bs_param_est_arr,
@@ -367,8 +355,6 @@ function go()
 
     CSV.write(joinpath(bootstrap_out_dir, "..", "$note" * ".csv"), bootstrap_sd_df)
 
-    # # # isdir(bootstrap_out_dir) || mkdir(bootstrap_out_dir)
-    # # isdir(out_dir) || mkdir(out_dir)
 
     bs_alpha_i_dict = Dict{Any,Any}()
     bs_beta_alpha_dict = Dict{Any,Any}()
@@ -378,8 +364,6 @@ function go()
     bs_gamma_dict = Dict{Any,Any}()
     bs_alpha_dict = Dict{Any,Any}()
     bs_mkup_dict = Dict{Any,Any}()
-
-    # stage1_id = 2
 
     for stage1_id in 1:100
         out_dir = joinpath(bootstrap_out_dir, "bs_" * "$stage1_id")
@@ -744,13 +728,6 @@ function go()
 
 
     note = "two_stage_param_bootstrap_errors"
-    # bootstrap_sd_df = DataFrame(parameter = bs_param_name_arr, 
-    #                             estimate = bs_param_est_arr, 
-    #                             bootstrap_sd = bs_sd_arr, 
-    #                             trunc_bootstrap_sd = bs_trunc_sd_arr,
-    #                             lower_bound = bs_2p5ptiles_arr,
-    #                             upper_bound = bs_97p5ptiles_arr
-    #                             )
 
     bootstrap_sd_df = DataFrame(parameter=bs_param_name_arr,
         estimate=bs_param_est_arr,
@@ -765,13 +742,6 @@ function go()
     CSV.write(joinpath(bootstrap_out_dir, "..", "$note" * ".csv"), bootstrap_sd_df)
 
     note = "second_stage_estimates_summary"
-    # bootstrap_sd_df = DataFrame(parameter = bs_param_name_arr, 
-    #                             estimate = bs_param_est_arr, 
-    #                             bootstrap_sd = bs_sd_arr, 
-    #                             trunc_bootstrap_sd = bs_trunc_sd_arr,
-    #                             lower_bound = bs_2p5ptiles_arr,
-    #                             upper_bound = bs_97p5ptiles_arr
-    #                             )
 
     bootstrap_sd_df = DataFrame(
         parameter=bs_param_name_arr,

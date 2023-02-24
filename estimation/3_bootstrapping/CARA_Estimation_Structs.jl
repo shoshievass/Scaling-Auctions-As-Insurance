@@ -113,8 +113,6 @@ function constructMinimalAuction(auction_data::DataFrames.DataFrame, bidder_data
     H_coef2 = exp( (phi_approx_a * bidder_auction_mean) / bidder_auction_sigma_k ) * (office_score)^(-phi_approx_a/bidder_auction_sigma_k)
     H_exponent = (-phi_approx_a)/bidder_auction_sigma_k
     
-    # agg_bidder_type = (permutedims(Vector(proj_level_bidder_type_data[(3-2),4:num_bidder_feat_cols]))[1,:])
-
     return MinimalAuction(
                         contract_no, 
                         project_type_id, 

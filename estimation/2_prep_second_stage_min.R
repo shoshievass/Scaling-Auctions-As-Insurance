@@ -5,7 +5,7 @@
 ## Project: Scaling Auctions as Insurance 
 ##
 ## Purpose of script: Export bid and quantity model data to julia for gmm 
-##                    This version just preps the main estimates, and not 
+##                    This version just preps the main estimates ("bs_0"), and not 
 ##                    the bootstrap iterations.
 ##
 ## Input:  data/estimation_step1_output_minfit.rdata
@@ -91,7 +91,7 @@ item_features <- demo_project_item_df %>%
   ) %>%
   bind_cols(as.data.frame(X_q))
 
-firm_df <- bidder_project_level_df%>%
+firm_df <- bidder_project_level_df %>%
   group_by(bidder_id_seq) %>%
   mutate(num_aucs = n()) %>%
   ungroup() %>%
@@ -105,7 +105,6 @@ firm_df <- bidder_project_level_df%>%
   select(
     project_bidder_id,
     fringe_num_aucs
-    # bidder_id_grouped_seq
   )
 
 more_project_chars <- bidder_project_level_df %>%
@@ -138,7 +137,6 @@ bidder_project_chars <- empirical_bid_data %>%
     project_id_sequential,
     contract_no,
     bidder_specialization,
-    # fringe,
     capacity,
     utilization,
     same_district,
@@ -162,12 +160,11 @@ bidder_project_chars <- empirical_bid_data %>%
   ) %>%
   group_by(project_bidder_id) %>%
   summarize_all(first) %>%
-  # ungroup() %>%
   left_join(more_project_chars, by = "project_bidder_id") %>%
   ungroup()
 
 scale_this <- function(x){
-  (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
+  (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
 }
 
 bidder_type_X_mat <- bidder_project_chars %>%
@@ -182,7 +179,7 @@ bidder_type_X_df <-
     fringe_num_aucs = bidder_project_chars$fringe_num_aucs) %>%
   bind_cols(as.data.frame(bidder_type_X_mat))
 
-bidder_type_X_df_scaled <- bidder_type_X_df%>%
+bidder_type_X_df_scaled <- bidder_type_X_df %>%
   mutate_at(vars(-bidder_id, -contract_no, -fringe_num_aucs), scale)
 
 
@@ -232,7 +229,7 @@ getSampleDataBootstrap <- function(sample_demo_df, bsnumber){
   bidder_df <- sample_demo_df %>%
     select(bidder_id_sequential, bid_unit_price, item_id_sequential) %>%
     mutate(
-      item_id_sequential = format(item_id_sequential, scientific=F)
+      item_id_sequential = format(item_id_sequential, scientific = F)
     ) %>%
     spread(bidder_id_sequential, bid_unit_price)
 

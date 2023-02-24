@@ -27,7 +27,7 @@ X_q <- scale(X_q)
 
 raw_data_list_qa <-
   list(
-    N = length(unique_project_item_ids), 
+    N = length(unique_project_item_ids),
     P = as.integer(ncol(X_q)),
     X = X_q,
     q_at = demo_project_item_df$q_at,
@@ -39,6 +39,7 @@ qa_model <- stan_model("estimation/auxiliary/1_estimate_first_stage_model.stan")
 
 qa_fit <- sampling(qa_model, data = raw_data_list_qa, cores = 4, seed = 938086356)
 
+## Save full model fit object -- needed for bootstrapped estimates ##
 save.image(file = paste0("data/estimation_step1_output_fullfit.rdata"))
 
 qa_model_raw_fit <- get_posterior_mean(qa_fit, pars = "q_at_model")[, 5]
@@ -48,4 +49,5 @@ qa_model_fit <- qa_model_raw_fit * demo_project_item_df$q_ot
 sigma_t_fit <- sigma_t_raw_fit  * demo_project_item_df$q_ot
 rm(qa_fit)
 
+## Save light version of model fit -- for everything other than bootstrapped estimates ##
 save.image(file = paste0("data/estimation_step1_output_minfit.rdata"))
