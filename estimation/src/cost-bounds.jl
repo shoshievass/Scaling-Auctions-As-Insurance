@@ -14,7 +14,6 @@ function get_alphas(auc::Auction, config::Config, sampler::RandomAlpha)
     alpha_dist = truncated(
         LogNormal(auc.alpha_lgmean, auc.alpha_lgsigma),
         auc.lowest_alpha,
-        # auc.alpha_min_bin,
         auc.alpha_bar_bar,
     )
 

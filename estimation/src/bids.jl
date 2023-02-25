@@ -72,9 +72,6 @@ function construct_optimizer(auc::Auction, config::Config{R,A,Rt,H,E,S,Q,En}, s,
     # attention on proving optimality, select MIPFocus=2.
     # If the best objective bound is moving very slowly (or not at all), you may want to try MIPFocus=3 to focus on the bound.
 
-
-    # set_optimizer_attribute(m, "NonConvex", 2)
-
     # Silence optimizer output
     JuMP.set_silent(m)
 
@@ -130,12 +127,7 @@ function construct_optimizer(auc::Auction, config::Config{R,A,Rt,H,E,S,Q,En}, s,
                                -
                                risk * sigma_sq[i] * (lambda * b[i] - alpha * auc.c[i])^2 for i in
                                1:auc.T))
-        # @objective(m, Max, sum(
-        #     (1 + y_bar[i] * z[i]) * q_engineer[i] +
-        #         (lambda * b[i] * ((1 + y_bar[i] * z[i]) * q_forecast[i] - q_engineer[i])) -
-        #         alpha * auc.c[i] * (1 + y_bar[i] * z[i]) * q_forecast[i] -
-        #         risk * sigma_sq[i] * (lambda * b[i] - alpha * auc.c[i])^2 for i in 1:auc.T
-        # ))
+
     end
 
     # Add constraints
@@ -217,7 +209,7 @@ function calc_boundary(
     function target(x)
         try
             ob = optimal_bid(auc, config, x[1], am)
-            # println("\t $(auc.contract_no) config: $(config.tag) s: $(round(x[1], digits=2)) ce: $(round(ob.ce, digits=2))")
+            
 
             return ob.ce^2
         catch e
@@ -233,7 +225,7 @@ function calc_boundary(
 
             println("\t Error: $e")
 
-            # println("\t Unable to calculate optimal bid, retrying")
+            
             return lowest_s^2
         end
     end
@@ -271,23 +263,10 @@ function calc_boundary(
             return only(best_candidate(solution))
         end
 
-        # No optimum found! Scream and yell!
-        # println("\t !!! Failed finding zero")
-        # println("\t !!! Error message: $e")
         rethrow(e)
     end
 end
 
-# function calc_boundary(
-#     auc::Auction,
-#     config::Config{R,A,Rt,H,E,S,Q,En},
-# ) where {R,A<:Lump,Rt,H,E,S,Q,En}
-#     am = alpha_max(auc, config)
-#     risk_mean = get_risky_mean(auc, config)
-#     risk_var = get_risky_cost_var_gamma(auc, config, am)
-
-#     return am * risk_mean + am^2 * risk_var
-# end
 
 function ds_dc(
     auc::Auction,
@@ -298,7 +277,6 @@ function ds_dc(
     # Prerequisites
     alpha_dist = truncated(
         LogNormal(auc.alpha_lgmean, auc.alpha_lgsigma),
-        # 0.5,
         auc.lowest_alpha,
         auc.alpha_bar,
     )
@@ -329,8 +307,6 @@ function ds_dc(
     # Calculate derivative
     ds_dc = numerator / denominator
 
-    # @info "ds_dc" ForwardDiff.value(s) ForwardDiff.value(numerator) ForwardDiff.value(denominator)
-
     # Toss it back to the caller
     return ds_dc
 end
@@ -356,7 +332,6 @@ function ds_dc(
     risk_mean = get_risky_mean(auc, config)
     risk_var = get_risky_cost_var(auc, config)
 
-    # cost_term = alpha * risk_mean + alpha^2 * gamma * risk_var
     ce = certainty_equivalent(auc, config, alpha, s)
     exp_profit = exp(gamma * ce)
     profit_term = (exp_profit - 1) / gamma
@@ -376,7 +351,6 @@ function ds_dc(
     # Prerequisites
     alpha_dist = truncated(
         LogNormal(auc.alpha_lgmean, auc.alpha_lgsigma),
-        # 0.5,
         auc.lowest_alpha,
         auc.alpha_bar
     )
@@ -400,8 +374,6 @@ function ds_dc(
     lambda_b_min_c = (lambda * opt.bid) - (alpha * auc.c)
     mixed_q = (lambda * qb + (1 - lambda) * qe)
 
-    # profit_ce_analytic = (mixed_q' * opt.bid - alpha * (qb' * auc.c)) -
-    #  (0.5 * gamma) * ((sigma_sq .* lambda_b_min_c)' * lambda_b_min_c)
     profit_ce = opt.ce
 
     profit_term = exp(gamma * profit_ce) - 1
@@ -419,7 +391,6 @@ function density(auc::Auction, config::Config, a)
 
     alpha_dist = truncated(
         LogNormal(auc.alpha_lgmean, auc.alpha_lgsigma),
-        # 0.5,
         auc.lowest_alpha,
         auc.alpha_bar,
     )
@@ -459,10 +430,6 @@ function equilibrium(
         s_max = calc_boundary(auc, config)
         !silent && verbose && println("\t Boundary is $s_max")
 
-        # if config.auctype isa Lump
-        #     s_max = s_max + config.monopoly.amount
-        # end
-
         # Get alpha range
         a_max, a_min = alpha_span(auc, config)
 
@@ -471,7 +438,7 @@ function equilibrium(
 
         # Check if there's only one entrant
         prob = if config.entry.n_entrants == 1
-            # f(s, p, alpha) = 0
+        
 
             # Monopolist s_max
             if config.monopoly isa FixedAmount
@@ -486,7 +453,7 @@ function equilibrium(
                 end
             else
                 s_max = monopoly_rent(auc, config)
-                # s_max = max(s_max, monopoly_rent(auc, config))
+
             end
 
             prob = ODEProblem((args...) -> 0, s_max, (a_max, a_min))
@@ -499,9 +466,7 @@ function equilibrium(
 
         # Attempt to calculate a solution
         verbose && println("\t Solving ODE, autodiff=$(use_ad)")
-        # solver = use_ad ?
-        #     AutoTsit5(Rosenbrock23(autodiff=true)) :
-        #     Rodas5(autodiff = false)
+
 
         solvers = if use_ad
             if config.entry.n_entrants == 1
@@ -698,32 +663,22 @@ function equilibrium(
             # Bundle up the results
             if !silent && verbose
                 println("\t Solved:")
-                # println("\t\t winning_score:    $winning_score")
-                # println("\t\t winning_cost:     $winning_cost")
-                # println("\t\t winning_ce:       $winning_ce")
-                # println("\t\t winning_utility:  $winning_utility")
                 println("\t\t expected_ce:      $expected_ce")
                 println("\t\t expected_cost:    $expected_cost")
                 println("\t\t expected_utility: $expected_utility")
                 println("\t\t s_max:            $s_max")
-                # println("\t\t winning alpha:    $(auc.winning_alpha)")
                 println("")
             end
-
-            # println("Linear error: " , linear_errors'linear_errors)
 
             return (
                 contract=auc.contract_no,
                 winning_score=winning_score,
-                # winning_opt=winning_opt,
                 winning_cost=winning_cost,
                 winning_ce=winning_ce,
                 winning_utility=winning_utility,
                 expected_ce=expected_ce,
                 expected_cost=expected_cost,
                 expected_utility=expected_utility,
-                # expected_bid=expected_bid,
-                # expected_shade=expected_shade,
                 s_max=s_max,
                 linear_error=sum(linear_errors .^ 2),
                 negative_bid=mean(negative_bids),
@@ -735,15 +690,12 @@ function equilibrium(
             return (
                 contract=auc.contract_no,
                 winning_score=missing,
-                # winning_opt=missing,
                 winning_cost=missing,
                 winning_ce=missing,
                 winning_utility=missing,
                 expected_ce=missing,
                 expected_cost=missing,
                 expected_utility=missing,
-                # expected_bid=missing,
-                # expected_shade=missing,
                 s_max=s_max,
                 linear_error=missing,
                 negative_bid=missing,
@@ -777,23 +729,17 @@ function equilibrium(
             Symbol(string(e))
         end
 
-        # if e isa MathOptInterface.ResultIndexBoundsError
-        #     rethrow(e)
-        # end
         println("\tReturning missing solution")
 
         return (
             contract=auc.contract_no,
             winning_score=missing,
-            # winning_opt=missing,
             winning_cost=missing,
             winning_ce=missing,
             winning_utility=missing,
             expected_ce=missing,
             expected_cost=missing,
             expected_utility=missing,
-            # expected_bid=missing,
-            # expected_shade=missing,
             s_max=missing,
             linear_error=missing,
             negative_bid=missing,

@@ -7,7 +7,6 @@ project_dir = dirname(dirname(@__DIR__))
 indir = joinpath(project_dir, "data", "estimation_step4_cf_inputs")
 outdir = joinpath(project_dir, "data", "estimation_step5_outputs")
 cf_name = "cfdata"
-# potential_path = joinpath(indir, "potential_bidders_by_contract_v2.csv
 
 function load_files()
     # List all the file
@@ -19,13 +18,6 @@ function load_files()
     path = joinpath(path, "estimation_step5_outputs", "raw")
     return filter(isfile, readdir(path, join=true))
 
-    # folders = sort(filter(isdir, readdir(path, join=true)))
-
-    # results = Dict{String,Vector{String}}()
-    # for folder in folders
-    #     results[folder] = 
-    # end
-    # return results
 end
 
 function parse_files()

@@ -5,6 +5,11 @@ using JuMP
 using Ipopt
 using DataFrames, CSV
 using Dates
+using Ipopt, KNITRO
+
+# Set this to true to use KNITRO, if it is available.
+# KNITRO is significantly faster than Ipopt.
+const USE_KNITRO=false
 
 # Set up directories
 project_dir = dirname(dirname(@__DIR__))
@@ -183,7 +188,6 @@ function go()
         example_project = DataFrame(CSV.File(julia_data_dir * "sample_project_$contract.csv"))
         example_bidders = DataFrame(CSV.File(julia_data_dir * "sample_project_bidders_$contract.csv"))
         example_bidder_types = DataFrame(CSV.File(julia_data_dir * "sample_project_biddertypes_$contract.csv"))
-        # example_aggbidder_types = DataFrame!(CSV.File(julia_data_dir*"sample_project_aggbiddertypes_$contract.csv"))
 
         auction_arr[i] = constructMinimalAuction(example_project, example_bidders, example_bidder_types, dollar_scale)
         auc_arr_contract_nos[i] = auction_arr[i].contract_no
@@ -193,7 +197,6 @@ function go()
             project_type_dict[auc_project_type_id] = project_type_dict[auc_project_type_id] + 1
         catch error
             if isa(error, KeyError)
-                # project type id not found
                 project_type_dict[auc_project_type_id] = 1
             end
         end
@@ -213,7 +216,6 @@ function go()
                 push!(item_cluster_dict[item_cluster], Item_Instance(auction_arr[i].contract_no, t, auction_arr[i], (auction_arr[i].num_bidders)))
             catch error
                 if isa(error, KeyError)
-                    #                    println("No value for item_dict[$item_id]")
                     item_cluster_dict[item_cluster] = Set([Item_Instance(auction_arr[i].contract_no, t, auction_arr[i], (auction_arr[i].num_bidders))])
                 end
             end
@@ -302,7 +304,6 @@ function go()
                     sequential_id = sequential_id + 1
                 end
 
-                #             println("bidder id pushed ", bidder_id, " w/ seq id ", bidder_trunc_id_dict[bidder_id])
             end
         end
     end
@@ -325,7 +326,6 @@ function go()
                 push!(bidder_trunc_instance_dict[bidder_unique_id], Bidder_Instance_w_Skew(auc.contract_no, n, auc, (auc.T), bidder_skew_item_indices, num_skew_items))
             catch error
                 if isa(error, KeyError)
-                    #                    println("No value for item_dict[$item_id]")
                     bidder_trunc_instance_dict[bidder_unique_id] = Set([Bidder_Instance_w_Skew(auc.contract_no, n, auc, (auc.T), bidder_skew_item_indices, num_skew_items)])
                 end
             end
@@ -366,8 +366,13 @@ function go()
     num_nus = sum((sum(1 for t = 1:auc.T) * auc.num_bidders) for auc in auction_arr)
     println("num_nus is ", num_nus)
 
-    m = Model(Ipopt.Optimizer)
+    # m = Model(Ipopt.Optimizer)
     # m = Model(KNITRO.Optimizer)
+    m = if USE_KNITRO
+        Model(KNITRO.Optimizer)
+    else
+        Model(Ipopt.Optimizer)
+    end
 
 
     @variables m begin
@@ -387,7 +392,6 @@ function go()
         m,
         inv_gamma[auc in auction_arr, n in 1:auc.num_bidders],
         (sum(auc.bidders[n].X[j] * inv_gamma_coeff[j] for j = 1:num_bidder_features) + inv_gamma_val[bidder_trunc_id_dict[auc.bidders[n].bidder_id]])
-        #         inv_gamma_val[bidder_gamma_simple_type_dict[bidder_trunc_id_dict[auc.bidders[n].bidder_id]]])
     );
 
 
@@ -416,11 +420,6 @@ function go()
         (auc.bidders[n].b_data[t] - (alpha[auc, n] * auc.optb_denom[t]) - (auc.optb_num_main[t] * inv_gamma[auc, n]) - auc.optb_num_coeff[t] * auc.bidders[n].score)
     );
 
-    # @NLexpression(
-    #     m,
-    #     moment1,
-    #     sum( (sum((nu[item_inst.auction, n, item_inst.seq_item_no]) for n in 1:item_inst.auction.num_bidders)/item_inst.auction.num_bidders) for item_inst in item_cluster_dict[1])^2 / item_cluster_numobs_dict[1] 
-    #     )
 
     @NLexpression(
         m,
@@ -449,7 +448,6 @@ function go()
     @NLobjective(
         m,
         Min,
-        #             moment1 +
         moments2 +
         moments3 +
         moments4 +
@@ -556,7 +554,6 @@ function go()
             alpha_est = alpha_dict[auc, n]
             
             t_end = t_start + auc.T - 1
-            # bid_fit_vec[t_start:t_end] = bid_fit_dict[auc.bidders[n]]
             bid_fit_vec[t_start:t_end]  = [ ((alpha_est*auc.optb_denom[t]) + (auc.optb_num_main[t]*inv_gamma_est) + auc.optb_num_coeff[t]*auc.bidders[n].score) for t = 1:auc.T]
             bid_fit_w_error_vec[t_start:t_end]  = [ ( (alpha_est*auc.optb_denom[t]) + (auc.optb_num_main[t]*inv_gamma_est) + auc.optb_num_coeff[t]*(auc.bidders[n].score - sum( auc.q_o[t]*nu_dict[auc.bidders[n]][t] for t in 1:auc.T))) for t = 1:auc.T]
 
@@ -577,7 +574,6 @@ function go()
     end
 
     bid_df = DataFrame(contract_no = contract_nos, bidder_id = bidder_ids, inv_gamma = invgammas, alpha = alphas, bid_fit = bid_fit_vec, bid_fit_w_error = bid_fit_w_error_vec, invgamma_coeff = invgamma_coeffs, item_id = item_ids, num_items = num_item, nu = nu_arr)
-    # CSV.write(out_dir * "individualgamma_" * "$today" * "_bid_fit.csv", bid_df)
     CSV.write(out_dir * "second_stage_estimates_bid_fit.csv", bid_df)
 
     return mkp_df

@@ -95,9 +95,6 @@ function expected_cost(auc_original, config, alpha_bar, k, l, g_thing, is_prime)
         )
     end
 
-    # @info "" q_prime alpha_bar
-    # display([interpolated_costs θs])
-    # display(tups)
 
     return tups
 end
@@ -179,15 +176,6 @@ function go(job_id, total_jobs)
             # RECONFIGURATE
             config = reparameterize(config, k, l, g_thing)
 
-            # Estimate the equilibrium, no change in alpha_bar
-            # orig_eq, _ = equilibrium(
-            #     auc,
-            #     config,
-            #     plot_score=false,
-            #     verbose=false,
-            #     silent=true
-            # )
-
             # Calculate the new alpha_bar
             println("    Calculating alpha bar prime")
             alpha_bar_prime, _, monopolist_ce, opt = solve_alpha_bar(auc, config; use_cdf=false)
@@ -202,7 +190,6 @@ function go(job_id, total_jobs)
 
             ts = DataFrame(vcat(alpha_bar_tups, alpha_bar_prime_tups))
             CSV.write(joinpath(rawpath, "$(config.tag)-$job_id.csv"), ts)
-            # display(ts)
 
             # Calculate office score
             os = office_score(auc)
@@ -261,15 +248,11 @@ function go(job_id, total_jobs)
 
     # Write to disk
     size(monopoly_info, 2) > 0 && CSV.write(joinpath(monopath, "$job_id.csv"), monopoly_info)
-    # size(results, 2) > 0 && CSV.write(joinpath(resultpath, "$job_id.csv"), rename(results, :contract => :contract_no))
 
     return monopoly_info
 end
 
-# Run it, homie
+# Run it!
 total_jobs = parse(Int, get(ENV, "SLURM_ARRAY_TASK_COUNT", "1"))
 current_job = parse(Int, get(ENV, "SLURM_ARRAY_TASK_ID", "1"))
 monopoly_info = go(current_job, total_jobs)
-
-# display(sort(monopoly_info, [:is_actual, :prime_cost]))
-println("GO TEAM")

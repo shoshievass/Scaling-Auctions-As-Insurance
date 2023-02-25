@@ -43,9 +43,6 @@ binscatter_manual_dot_with_weights <- function(data, y, x, weightvar, weight_siz
                                      paste(absorb,sep="",collapse=" + ") , "|" , "0" ,  "|" ,
                                      paste(c("0"),sep="",collapse=" + "), sep=" "))
 
-    # weight_res_formula = as.formula(paste(quo_name(weightvar_label), "~", paste(controls,sep="",collapse=" + ") , "|" ,
-    #                                  paste(absorb,sep="",collapse=" + ") , "|" , "0" ,  "|" ,
-    #                                  paste(c("0"),sep="",collapse=" + "), sep=" "))
     controls <- data[,controls]
 
     print(y_res_formula)
@@ -55,7 +52,6 @@ binscatter_manual_dot_with_weights <- function(data, y, x, weightvar, weight_siz
   y <- data[[quo_name(y_label)]]
   weightvar <- data[[quo_name(weightvar_label)]]
 
-  # print(summary(weightvar))
 
   f <- lfe::felm(formula, data=data)
   print(broom::tidy(f)[2,2:3])
@@ -69,13 +65,11 @@ binscatter_manual_dot_with_weights <- function(data, y, x, weightvar, weight_siz
   } else {
     f_Xres <- lfe::felm(x_res_formula, data=data)
     f_Yres <- lfe::felm(y_res_formula, data=data)
-    # f_weightres <- lfe::felm(weight_res_formula, data=data)
 
     data$x_binning <- f_Xres$residuals + mean(x)
     data$y_binning <- f_Yres$residuals + mean(y)
     data$weight_binning <- weightvar
 
-    # data$weight_binning <- f_weightres$residuals + mean(weightvar)
   }
 
 
@@ -94,7 +88,6 @@ binscatter_manual_dot_with_weights <- function(data, y, x, weightvar, weight_siz
 
   g <- ggplot2::ggplot(binned_data, aes(x = x_binned , y= y_binned))  + theme() +
     xlab(x_label) + ylab(y_label) + geom_point(colour = "#0072B2", size = log(binned_data$weight_binned_normed))
-    # geom_point(colour = "#0072B2", size = 2.5)
 
   if (fitline == TRUE) {
     g <- g + geom_smooth(data=data, aes(x = x_binning , y= y_binning), method='lm',formula=y~x, se=FALSE, color="#D55E00", size=1)
@@ -112,7 +105,6 @@ binscatter_manual_dot_with_weights <- function(data, y, x, weightvar, weight_siz
       v_adj_beta = pos_choice$adjv * 2.5 + (pos_choice$adjv+1)*(-0.75)
       v_adj_se = pos_choice$adjv * 1 + (pos_choice$adjv+1)*(0.75)
 
-      # print(posdf)
       g <- g +
         geom_text(data = data.frame(x=pos_choice$posx, y=pos_choice$posy), map = aes(x=x, y=y,hjust=pos_choice$adjh, vjust=(v_adj_beta), family = "Times New Roman"), label=beta) +
         geom_text(data = data.frame(x=pos_choice$posx, y=pos_choice$posy), map = aes(x=x, y=y,hjust=pos_choice$adjh, vjust=v_adj_se, family = "Times New Roman"), label=se)

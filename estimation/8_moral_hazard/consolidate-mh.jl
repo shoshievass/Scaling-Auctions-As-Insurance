@@ -15,10 +15,6 @@ function list_files()
     for dir in filter(isdir, sort(readdir(outdir, join=true), rev=false))
         println(dir)
 
-        # if !occursin("146141", dir)
-        #     continue
-        # end
-
 
         results = DataFrame()
         for path in readdir(dir, join=true)

@@ -3,7 +3,6 @@ using Pkg;
 Pkg.activate(dirname(@__DIR__))
 using Revise
 using Counterfactual
-# using Distributed
 
 
 using Dates
@@ -112,7 +111,7 @@ function run_auc(auc, config_fns, root, config_df)
 
         if res.retcode == :Success
             hazard = hazard_report(auc, config, sol)
-            # display(hazard)
+
             lock(hazardslock) do 
                 hazards = vcat(hazards, hazard)
                 CSV.write(hazardpath, hazards)
@@ -165,11 +164,7 @@ function go(job_id, total_jobs)
         a -> run_auc(a, config_fns, path, config_df),
         auc_ids
     )
-    #results_df = DataFrame(reduce(vcat, results_vec))
 
-    #CSV.write("mh-results.csv", results_df)
-
-    #return results_df
 end
 
 total_jobs = parse(Int, get(ENV, "SLURM_ARRAY_TASK_COUNT", "430"))

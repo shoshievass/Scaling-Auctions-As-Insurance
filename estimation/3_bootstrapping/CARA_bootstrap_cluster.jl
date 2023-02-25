@@ -1,5 +1,4 @@
 #########
-# Last edited: Aug 13, 2022
 # Inputs: ARGS[1] takes the array index from slurm
 # Outputs: For qa-model draw # [ARGS[1]], run estimation for each of 100 draws of auctions defined by bootstrap_auction_samples.csv
 ########

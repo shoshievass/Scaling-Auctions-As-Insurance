@@ -53,7 +53,7 @@ item_frequency_df <- demo_project_item_df %>%
   ungroup()
 
 
-item_frequency_quantiles = quantile(item_frequency_df$item_frequency, probs = seq(0,1,0.025))
+item_frequency_quantiles <- quantile(item_frequency_df$item_frequency, probs = seq(0,1,0.025))
 
 unit_item_df <- demo_project_item_df %>%
   select(item_id_sequential,
@@ -89,7 +89,7 @@ item_features <- demo_project_item_df %>%
   ) %>%
   bind_cols(as.data.frame(X_q))
 
-firm_df <- bidder_project_level_df%>%
+firm_df <- bidder_project_level_df %>%
   group_by(bidder_id_seq) %>%
   mutate(num_aucs = n()) %>%
   ungroup() %>%
@@ -103,7 +103,6 @@ firm_df <- bidder_project_level_df%>%
   select(
     project_bidder_id,
     fringe_num_aucs
-    # bidder_id_grouped_seq
   )
 
 more_project_chars <- bidder_project_level_df %>%
@@ -136,7 +135,6 @@ bidder_project_chars <- empirical_bid_data %>%
     project_id_sequential,
     contract_no,
     bidder_specialization,
-    # fringe,
     capacity,
     utilization,
     same_district,
@@ -160,12 +158,11 @@ bidder_project_chars <- empirical_bid_data %>%
   ) %>%
   group_by(project_bidder_id) %>%
   summarize_all(first) %>%
-  # ungroup() %>%
   left_join(more_project_chars, by = "project_bidder_id") %>%
   ungroup()
 
 scale_this <- function(x){
-  (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
+  (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
 }
 
 bidder_type_X_mat <- bidder_project_chars %>%
@@ -180,7 +177,7 @@ bidder_type_X_df <-
     fringe_num_aucs = bidder_project_chars$fringe_num_aucs) %>%
   bind_cols(as.data.frame(bidder_type_X_mat))
 
-bidder_type_X_df_scaled <- bidder_type_X_df%>%
+bidder_type_X_df_scaled <- bidder_type_X_df %>%
   mutate_at(vars(-bidder_id, -contract_no, -fringe_num_aucs), scale)
 
 
@@ -192,8 +189,6 @@ project_mean_bidder_type_X_df <- bidder_type_X_df %>%
 project_mean_bidder_type_X_df_scaled <- project_mean_bidder_type_X_df %>%
   mutate_at(vars(-bidder_id, -contract_no), scale)
 
-
-# 
 ## Extract 100 random draws after a generous warmup in the fourth chain ##
 set.seed(9012018)
 num_bootstraps <- 100
@@ -259,12 +254,6 @@ getSampleDataBootstrap <- function(sample_demo_df, bsnumber){
    
   biddertype_df %>% write_csv(paste0(output_folder_name,"bs_",bsnumber,"/sample_project_biddertypes_",sample_demo_df$contract_no[1],".csv"))
   
-  
-  # bidder_aggtype_df <- project_mean_bidder_type_X_df_scaled %>%
-    # filter(contract_no == auction_df$contract_no[1])
-
-  # bidder_aggtype_df %>% write_csv(paste0(output_folder_name,"bs_",bsnumber,"/sample_project_aggbiddertypes_",sample_demo_df$contract_no[1],".csv"))
-
 }
 
 getPosteriorDrawFromQaModel <- function(bsnumber){
@@ -304,12 +293,9 @@ getPosteriorDrawFromQaModel <- function(bsnumber){
 project_ids <- unique(empirical_bid_data$project_id_sequential)
 contract_ids <- unique(empirical_bid_data$contract_no)
 
-# getPosteriorDrawFromQaModel(1)
-
 for (bs_iter in 1:num_bootstraps){
   getPosteriorDrawFromQaModel(bs_iter)
 }
-
 
 ### save original posterior mean estimates
 getMeanPosteriorDraw <- function(){

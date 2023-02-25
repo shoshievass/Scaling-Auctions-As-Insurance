@@ -1,8 +1,8 @@
 ### Functions for running bootstrap estimation for the CARA model ###
 ### Note: This is set to use KNITRO for optimization ###
-### Last edited June 3, 2022 ###
 ### svass@stanford.edu ###
 
+## Invoke appropriate licence address below for KNITRO ##
 # ENV["ARTELYS_LICENSE_NETWORK_ADDR"] = "license4.stanford.edu"
 
 function getBootstrapContractDf(num_bootstraps, raw_contract_list)
@@ -38,7 +38,6 @@ function run_bootstrap_projGamma(sample_contract_list, sample_no, julia_data_dir
         example_project = DataFrame(CSV.File(julia_data_dir*"sample_project_$contract.csv"))
         example_bidders = DataFrame(CSV.File(julia_data_dir*"sample_project_bidders_$contract.csv"))
         example_bidder_types = DataFrame(CSV.File(julia_data_dir*"sample_project_biddertypes_$contract.csv"))
-        # example_aggbidder_types = DataFrame(CSV.File(julia_data_dir*"sample_project_aggbiddertypes_$contract.csv"))
 
 
         auction_arr[i] = constructMinimalAuction(example_project, example_bidders, example_bidder_types, dollar_scale)
@@ -49,7 +48,6 @@ function run_bootstrap_projGamma(sample_contract_list, sample_no, julia_data_dir
             project_type_dict[auc_project_type_id] = project_type_dict[auc_project_type_id] + 1
         catch error
            if isa(error, KeyError)
-            # project type id not found
             project_type_dict[auc_project_type_id] = 1
            end
         end
@@ -69,7 +67,6 @@ function run_bootstrap_projGamma(sample_contract_list, sample_no, julia_data_dir
                 push!(item_cluster_dict[item_cluster], Item_Instance(auction_arr[i].contract_no , t, auction_arr[i], (auction_arr[i].num_bidders) ))
             catch error
                if isa(error, KeyError)
-#                    println("No value for item_dict[$item_id]")
                     item_cluster_dict[item_cluster] = Set([Item_Instance(auction_arr[i].contract_no , t, auction_arr[i], (auction_arr[i].num_bidders))])
                end
             end
@@ -135,7 +132,7 @@ function run_bootstrap_projGamma(sample_contract_list, sample_no, julia_data_dir
 
             if(!(haskey(bidder_trunc_id_dict, bidder_id)))
                 if(bidder_id in fringe_bidders)
-                    bidder_trunc_id_dict[bidder_id] = fringe_id## This will be the index of all the fringe bidders
+                    bidder_trunc_id_dict[bidder_id] = fringe_id ## This will be the index of all the fringe bidders
                 else
                    bidder_trunc_id_dict[bidder_id] = (sequential_id+1) 
                     sequential_id = sequential_id + 1
@@ -163,7 +160,6 @@ function run_bootstrap_projGamma(sample_contract_list, sample_no, julia_data_dir
                 push!(bidder_trunc_instance_dict[bidder_unique_id], Bidder_Instance_w_Skew(auc.contract_no , n, auc, (auc.T), bidder_skew_item_indices, num_skew_items) )
                 catch error
                    if isa(error, KeyError)
-    #                    println("No value for item_dict[$item_id]")
                         bidder_trunc_instance_dict[bidder_unique_id] = Set([ Bidder_Instance_w_Skew(auc.contract_no , n, auc, (auc.T), bidder_skew_item_indices, num_skew_items) ])
                    end
             end
@@ -357,16 +353,9 @@ function run_bootstrap_projGamma(sample_contract_list, sample_no, julia_data_dir
     bidder_i = ["" for i = 1:(num_unique_bidder_ids)]
 
     alpha_coeff_min = [value.(alpha_coeff[j]) for j = 1:num_bidder_features]
-
-#     j = 0
-#     for bidder in keys(bidder_trunc_id_dict) 
-#         global j = j+1
-#         bidder_i[j] = bidder
-#         alpha_i[j] = value(alpha_bidder_val[bidder_trunc_id_dict[bidder]])
-#     end
     
     local j = 0
-    for bidder in keys(bidder_trunc_id_dict) #[auc.bidders[n].bidder_id]
+    for bidder in keys(bidder_trunc_id_dict) 
             j = j+1
             bidder_i[j] = bidder
             alpha_i[j] = value(alpha_bidder_val[bidder_trunc_id_dict[bidder]])
@@ -384,16 +373,9 @@ function run_bootstrap_projGamma(sample_contract_list, sample_no, julia_data_dir
     bidder_i = ["" for i = 1:(num_unique_bidder_ids)]
 
     inv_gamma_coeff_min = [value.(inv_gamma_coeff[j]) for j = 1:num_bidder_features]
-
-#     j = 0
-#     for bidder in keys(bidder_trunc_id_dict) 
-#         global j = j+1
-#         bidder_i[j] = bidder
-#         gamma_i[j] = value(inv_gamma_val[bidder_trunc_id_dict[bidder]])
-#     end
     
     local j = 0
-    for bidder in keys(bidder_trunc_id_dict) #[auc.bidders[n].bidder_id]
+    for bidder in keys(bidder_trunc_id_dict) 
             j = j+1
             bidder_i[j] = bidder
             gamma_i[j] = value(inv_gamma_val[bidder_trunc_id_dict[bidder]])

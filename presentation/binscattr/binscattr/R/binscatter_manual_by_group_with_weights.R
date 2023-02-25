@@ -28,9 +28,6 @@ binscatter_manual_by_group_with_weights <- function(data, y, x, weightvar, weigh
   x_label = enquo(x)
   y_label = enquo(y)
   weightvar_label = enquo(weightvar)
-  # weight_sizenorm_label = enquo(weight_sizenorm)
-
-  # print(weight_sizenorm)
 
   # Produce binned residualized variables by group
   binned_data <- data %>%
@@ -47,8 +44,6 @@ binscatter_manual_by_group_with_weights <- function(data, y, x, weightvar, weigh
       # get_manual_binning_residuals(., !!y_label, !!x_label, controls, absorb, clustervars)
       get_unbinned_residuals(., !!y_label, !!x_label, controls, absorb, clustervars)
     )
-
-  # print(data)
 
   # Make sure the grouping variable is treated as a discrete object
   binned_data <- binned_data %>%
