@@ -433,6 +433,22 @@ function go()
                 end
             end
 
+            ## gamma_i
+            for g in 1:nrow(gamma_i_df)
+                gamma_row = gamma_i_df[g,:]
+
+                bidder_id = gamma_row[:bidder_id][1]
+                gamma_i_est = gamma_row[:gamma_i][1]
+
+                try
+                    push!(bs_gamma_i_dict[bidder_id],  gamma_i_est)
+                catch error
+                    if isa(error, KeyError)
+                        bs_gamma_i_dict[bidder_id] = [gamma_i_est]
+                    end
+                end
+            end
+
             ## Beta_alpha
             for b in 1:nrow(beta_alpha_df)
                 beta_row = beta_alpha_df[b, :]
@@ -463,20 +479,8 @@ function go()
                 end
             end
 
-
-            ## gamma_intercept
-            try
-                push!(bs_gamma_i_dict[1], gamma_i_df[1, 1])
-            catch error
-                if isa(error, KeyError)
-                    bs_gamma_i_dict[1] = [gamma_i_df[1, 1]]
-                end
-            end
-
         end
     end
-
-    # bs_alpha_i_dict
 
     bs_mean_dict = Dict{Any,Any}()
     bs_median_dict = Dict{Any,Any}()
@@ -486,11 +490,7 @@ function go()
     bs_lower_95ci_dict = Dict{Any,Any}()
     bs_upper_95ci_dict = Dict{Any,Any}()
 
-
-
     trunc95_numdraws = Int(round((100 * 100) / 40))
-
-
 
     enter_param_bootstrap_stats_into_sumdict!(bs_gamma_dict,
         "gamma",
@@ -651,7 +651,7 @@ function go()
 
     end
 
-    ## ga,,a_i
+    ## gammaa_i
     for a in 1:size(alpha_i_df, 1)
         gamma_row = gamma_i_df[a, :]
 
@@ -664,7 +664,6 @@ function go()
 
     num_params = length(keys(bs_sd_dict))
     bs_param_name_arr = Array{Any}(undef, num_params)
-    # bs_param_est_arr = Array{Any}(undef,num_params)
     bs_mean_arr = Array{Any}(undef, num_params)
     bs_median_arr = Array{Any}(undef, num_params)
     bs_sd_arr = Array{Any}(undef, num_params)
@@ -678,7 +677,6 @@ function go()
     for param in sort(collect((keys(bs_sd_dict))))
         ind = ind + 1
         bs_param_name_arr[ind] = param
-        #     bs_param_est_arr[ind] = param_dict[param]
         bs_mean_arr[ind] = bs_mean_dict[param]
         bs_median_arr[ind] = bs_median_dict[param]
         bs_sd_arr[ind] = bs_sd_dict[param]
@@ -689,7 +687,6 @@ function go()
 
     note = "two_stage_bootstrap_errors"
     bootstrap_sd_df = DataFrame(parameter=bs_param_name_arr,
-        #                             estimate = bs_param_est_arr, 
         mean=bs_mean_arr,
         bootstrap_sd=bs_sd_arr,
         trunc_bootstrap_sd=bs_trunc_sd_arr,
@@ -707,7 +704,6 @@ function go()
     bs_median_arr = Array{Any}(undef, num_params)
     bs_sd_arr = Array{Any}(undef, num_params)
     bs_trunc_sd_arr = Array{Any}(undef, num_params)
-    # bs_ptiles_arr = Array{Any}(undef, num_params)
     bs_2p5ptiles_arr = Array{Any}(undef, num_params)
     bs_97p5ptiles_arr = Array{Any}(undef, num_params)
 

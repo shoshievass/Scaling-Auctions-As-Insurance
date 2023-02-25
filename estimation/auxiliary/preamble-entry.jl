@@ -122,24 +122,6 @@ function polyinterp(x, y)
     actual_y, fitted_y, num_interpolated = polyfit(x, y, 4)
     return fitted_y, num_interpolated
 
-    # Find the missing values
-    # inds = map(!ismissing, y)
-
-    # if sum(inds) == length(x)
-    #     return map(identity, y), 0
-    # else
-    #     # Interpolate it
-    #     x_hat = map(identity, x[inds])
-    #     y_hat = map(identity, y[inds])
-
-    #     try
-    #         poly = Polynomials.fit(x_hat, y_hat)
-    #         return map(poly, x), sum(map(!, inds))
-    #     catch e
-    #         # rethrow(e)
-    #         return y, length(y)
-    #     end
-    # end
 end
 
 function solve_alpha_bar(auc::Auction, config::Config; use_cdf=true)
@@ -167,7 +149,6 @@ function solve_alpha_bar(auc::Auction, config::Config; use_cdf=true)
             alpha_dist = truncated(
                 LogNormal(new_auction.alpha_lgmean, new_auction.alpha_lgsigma),
                 new_auction.lowest_alpha,
-                #new_auction.alpha_min_bin, ## changing to bin level lowest alpha seen
                 new_auction.alpha_bar_bar,
             )
 
@@ -183,12 +164,8 @@ function solve_alpha_bar(auc::Auction, config::Config; use_cdf=true)
             sum_bit = sum(θs .* (1 - exp(γ * k)))
             winner = (1 - q)^(M - 1) * (1 - exp(-γ * (opt.ce - k)))
 
-            # l1norm = (sum_bit + winner)^2 + (acdf - q) ^ 2 / 2 + (uniform_norm - q) ^ 2 + (entry_norm - q) ^ 2
-            # l1norm = (sum_bit + winner)^2 + (entry_norm - q) ^ 2
             if use_cdf
-                # l1norm = (sum_bit + winner)^2 + (acdf- q) ^ 2
-                # return l1norm, sol, winner + sum_bit
-
+               
                 prob_monopoly = (1 - q)^(M - 1)
                 prob_competition = 1 - prob_monopoly
 
@@ -200,8 +177,7 @@ function solve_alpha_bar(auc::Auction, config::Config; use_cdf=true)
 
                 return l1norm, sol, monopoly_total_eu, opt
             else
-                # winner = (1 - acdf)^(M - 1) * (1 - exp(-γ * (opt.ce - k))) ## for computing counterfactuals, q = CDF(alpha_bar)
-                # l1norm = (sum_bit + winner)^2
+               
                 prob_monopoly = (1 - acdf)^(M - 1)
                 prob_competition = 1 - prob_monopoly
 
@@ -212,7 +188,7 @@ function solve_alpha_bar(auc::Auction, config::Config; use_cdf=true)
                 l1norm = (entry_eu - monopoly_eu)^2
                 return l1norm, sol, monopoly_total_eu, opt
             end
-            # return l1norm, sol, opt.ce
+            
         catch e
             if e isa InterruptException
                 rethrow(e)
@@ -225,25 +201,10 @@ function solve_alpha_bar(auc::Auction, config::Config; use_cdf=true)
     end
 
     res = optimize(z -> opt_target(z)[1], auc.alpha_min_bin, auc.alpha_bar_bar, Brent())
-    # display(res)
-    # res2 = optimize(z -> opt_target(z)[1], 0.5, auc.alpha_bar_bar, GoldenSection())
-    # display(res2)
+
     _,_,ce,opt = opt_target(res.minimizer)
 
-    # xs = 0.5:0.01:1.2
-    # ys = map(z -> opt_target(z)[1], xs)
-    # UnicodePlots.lineplot(xs, ys) |> display
-
-    # xs = range(auc.lowest_alpha, auc.alpha_bar_bar, length=150)
-    # ys = map(z -> opt_target(z)[1], xs)
-    # # scatter(xs, ys) |> display
-    # UnicodePlots.lineplot(xs, ys) |> display
-    # any_monopolist = any(ys .>= 0)
-
     if Optim.converged(res)
-        # Get the optimal bid to return the monopolist info
-        # s = opt_target(res.minimizer)[2](res.minimizer)
-        # opt = Counterfactual.optimal_bid(auc, single_entrant_config, s, res.minimizer)
 
         return res.minimizer, res.minimum, ce, opt
     else
@@ -275,7 +236,6 @@ function solve_alpha_bar_and_k(auc::Auction, config::Config)
             ##############
             alpha_dist = truncated(
                 LogNormal(new_auction.alpha_lgmean, new_auction.alpha_lgsigma),
-                # new_auction.alpha_min_bin,
                 new_auction.lowest_alpha,
                 new_auction.alpha_bar_bar,
             )
@@ -292,11 +252,9 @@ function solve_alpha_bar_and_k(auc::Auction, config::Config)
             sum_bit = sum(θs .* (1 - exp(γ * k)))
             winner = (1 - q)^(M - 1) * (1 - exp(-γ * (opt.ce - k)))
 
-            # l1norm = (sum_bit + winner)^2 + (acdf - q) ^ 2 / 2 + (uniform_norm - q) ^ 2 + (entry_norm - q) ^ 2
-            # l1norm = (sum_bit + winner)^2 + (entry_norm - q) ^ 2
             l1norm = (sum_bit + winner)^2 + (acdf- q) ^ 2
             return l1norm, sol, winner + sum_bit
-            # return l1norm, sol, opt.ce
+            
         catch e
             rethrow(e)
             if e isa InterruptException
@@ -318,21 +276,8 @@ function solve_alpha_bar_and_k(auc::Auction, config::Config)
     _,_,ce = opt_target(res.minimizer)
 
 
-    # xs = 0.5:0.1:auc.alpha_bar_bar
-    # ys = map(z -> opt_target(z)[1], xs)
-    # UnicodePlots.lineplot(xs, ys) |> display
-
-    # xs = range(auc.lowest_alpha, auc.alpha_bar_bar, length=150)
-    # ys = map(z -> opt_target(z)[1], xs)
-    # # scatter(xs, ys) |> display
-    # UnicodePlots.lineplot(xs, ys) |> display
-    # any_monopolist = any(ys .>= 0)
-
     if Optim.converged(res)
-        # Get the optimal bid to return the monopolist info
-        # s = opt_target(res.minimizer)[2](res.minimizer)
-        # opt = Counterfactual.optimal_bid(auc, single_entrant_config, s, res.minimizer)
-
+        
         return res.minimizer, res.minimum, ce#, opt.s, any_monopolist
     else
         return missing, missing, missing
@@ -342,8 +287,6 @@ end
 function solve_k(auc::Auction, config::Config, λ, M, q, max_scalar)
     a = auc.alpha_bar
 
-    # g_grid = [1.0, 1.1, 1.25, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0]
-    # g_grid = collect(range(1.0, max_scalar, length=501))
     g_grid = [max_scalar]
     bids = zeros(length(auc.c), length(g_grid))
     ces = zeros(1, length(g_grid))
@@ -357,7 +300,6 @@ function solve_k(auc::Auction, config::Config, λ, M, q, max_scalar)
         # Config
         config = configurate(auc, λ, 1; monopoly_scaler=scaler)
 
-        # estimate n=1 eq
         try
             _, sol = equilibrium(auc, config; silent=false, verbose=false)
 
@@ -369,15 +311,6 @@ function solve_k(auc::Auction, config::Config, λ, M, q, max_scalar)
             utils[1, i] = opt.utility
             scores[1, i] = opt.s
 
-            # ce2 = Counterfactual.certainty_equivalent(
-            #     auc,
-            #     config,
-            #     a,
-            #     sol(a),
-            #     opt.bid,
-            #     opt.shade;
-            #     verbose=false
-            # )
 
             function opt_target(k; verbose=false)
                 sum_bit = sum(θs .* (1 - exp(γ * k)))
@@ -388,16 +321,11 @@ function solve_k(auc::Auction, config::Config, λ, M, q, max_scalar)
             end
 
             res = optimize(opt_target, 0.0, 100.0, GoldenSection())
-            # opt_target(res.minimizer, verbose=true)
-            # display(res)
             ks[1, i] = res.minimizer
             diffs[1, i] = res.minimum
 
             if i > 1 && ces[1, i-1] > ce
-                # return ces[1,1:(i-1)],
-                #     ks[1, 1:(i-1)],
-                #     g_grid[1:(i-1)],
-                #     scores[1,1:(i-1)]
+                # deprecated error checking 
             end
         catch e
             return ces[1, 1:(i-1)],
@@ -464,9 +392,6 @@ end
 
 function moments(auctions, λ, krange; alpha_samples=100)
     # Iterate through auctions
-    # moment_sum = 0.0
-    # moment_vec = zeros(Union{Missing, Float64}, length(auctions))
-    # moment_vec = zeros(length(auctions))
     moment_vec = []
 
     # Add an integer index to the auctioon maps
@@ -483,8 +408,7 @@ function moments(auctions, λ, krange; alpha_samples=100)
         path = joinpath(path, "entry-results")
         ode_path = joinpath(path, "odes")
         k_path = joinpath(path, "cost-grid")
-        #jobid = get(ENV, "SLURM_JOB_ID", "test")
-        #path = joinpath(path, jobid)
+        
         !isdir(path) && mkpath(path)
         !isdir(k_path) && mkpath(k_path)
         path = joinpath(path, "contract-$(auc.contract_no)-lambda-$(λ).csv")
@@ -503,8 +427,7 @@ function moments(auctions, λ, krange; alpha_samples=100)
             _inner_lock = Threads.ReentrantLock()
 
             Threads.@threads for n in 1:auc_N
-                # for n in 1:auc_N
-                # Generate configuration
+                
                 config = configurate(auc, λ, n)
 
                 # Calculate equilibrium
@@ -513,9 +436,7 @@ function moments(auctions, λ, krange; alpha_samples=100)
                 eus[n] = eq.expected_utility
 
                 if eq.retcode == :Success
-                    # kbounds = static_utility(auc, config, RandomAlpha(100), sol, entry_prob)
-                    # kbounds = static_utility(auc, config, ObservedAlpha(), sol, entry_prob)
-
+                    
                     lock(_inner_lock) do
                         push!(solutions, sol)
                     end
@@ -527,14 +448,12 @@ function moments(auctions, λ, krange; alpha_samples=100)
             end
 
             # Calculate ex-ante alpha
-            # a_max, a_min = auc.alpha_bar, auc.lowest_alpha
-            # arange = range(a_max, a_min, length=100)
             config = configurate(auc, λ, auc_N)
 
 
             alpha_tups = []
             _alpha_tups_lock = Threads.ReentrantLock()
-            # monopolist_grid = [1.15, 1.25, 1.5, 1.75, 2.0]
+            
             monopolist_grid = [1.25]
 
             alpha_dist = truncated(

@@ -13,4 +13,3 @@
 
 module load julia/1.7.3
 JULIA_NUM_THREADS=auto julia 7-counterfactuals.jl --threads=auto
-#JULIA_NUM_THREADS=auto julia --project entry-test.jl

@@ -16,28 +16,7 @@ function load_auctions(
     # Get auction data
     println("Getting cf_data alpha_data")
     cf_data = DataFrame(CSV.File(in_path, types=Dict(:pois_gamma_projfe => Float64)))
-    # bin_data = DataFrame(CSV.File(joinpath(in_dir, "alpha_gamma_distribution_v6.csv")))
     alpha_data = DataFrame(CSV.File(joinpath(in_dir, "alphas_by_auction_with_features.csv")))
-    # win_data = DataFrame(CSV.File(joinpath(in_dir, "mh_input_binlevel_60015259.csv")))
-    # select!(win_data, [:contract_no, :winning_alpha_eval])
-
-    # cf_data = leftjoin(cf_data, win_data, on=:contract_no)
-
-    # Add bin information to each contract
-    # println("Combining cf_data & bin_data")
-    # display(bin_data)
-    # display(cf_data)
-    # cf_data = leftjoin(
-    #     select(cf_data),
-    #     bin_data,
-    #     on=intersect(names(cf_data), names(bin_data))
-    # )
-
-    # cf_data = leftjoin(
-    #     cf_data,
-    #     alpha_data,
-    #     on=intersect(names(cf_data), names(alpha_data))
-    # )
 
     println("uniqifying cf_Data")
     unique!(cf_data)
@@ -52,10 +31,6 @@ function load_auctions(
 
         auction_arr[row] = construct_auction(in_dir, project_df, alpha_data)
 
-        # project = DataFrame(CSV.File(joinpath(in_dir, "sample_project_$contract.csv")))
-        # bidders = DataFrame(CSV.File(joinpath(in_dir, "sample_project_bidders_$contract.csv")))
-
-        # auction_arr[row] = construct_auction(project, bidders)
     end
 
     println("Extracting instruments")
@@ -74,11 +49,6 @@ function load_auctions(
     Z = leftjoin(select(cf_data, [:contract_no, :potential_bidder_bin_id]), Z, on=:contract_no)
 
     println("Taking average of Z")
-    # display(Z)
-    # Z2 = combine(
-    #     groupby(select(Z, Not(:contract_no)), :potential_bidder_bin_id),
-    #     All() .=> mean
-    # )
 
     bin_ids = unique(Z.potential_bidder_bin_id)
     group_data = zeros((length∘unique)(Z.potential_bidder_bin_id), size(Z,2))
@@ -88,11 +58,7 @@ function load_auctions(
         group_data[bin_id, :] = mean(subdf, dims=1)
     end
 
-    # Z2 = DataFrame(group_data, )
-
     println("Making z2_arr")
-    #Z2_bins = Z2.potential_bidder_bin_id
-    #select!(Z2, Not([:potential_bidder_bin_id_mean, :potential_bidder_bin_id]))
     Z2_arr = group_data
 
     println("returning")
@@ -103,7 +69,6 @@ trim_y_bar(ys; cap=inf) = map(y -> min(y, cap), ys)
 
 function calc_y_bar(auc, estimated; cap=Inf, n_items=1)
     # Short circuit all this garbage
-    # return zeros(auc.T) .+ 0.1
     actual = auc.q_a
     estimated = auc.q_o
 
@@ -135,15 +100,6 @@ function calc_y_bar(auc, estimated; cap=Inf, n_items=1)
 
     y_bar = trim_y_bar(y_bar, cap=cap)
 
-    # println("Bidding information")
-    # display(DataFrame(
-    #     bids=top_bids,
-    #     cost=auc.winning_alpha .* auc.c,
-    #     overbid=overbid,
-    #     actual=actual,
-    #     estimated=estimated,
-    #     y_bar=y_bar
-    # ))
     @assert all(y_bar .>= 0)
 
     return y_bar
