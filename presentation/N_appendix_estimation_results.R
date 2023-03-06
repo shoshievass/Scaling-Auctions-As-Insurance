@@ -9,12 +9,13 @@
 ## Input:  
 ##
 ##
-## Output: outputs/estimation_results/table8.tex
-##         outputs/estimation_results/table9.tex
-##         outputs/estimation_results/table10.tex
-##         outputs/estimation_results/fig6.jpg
-##         outputs/estimation_results/fig7.jpg
-##         outputs/estimation_results/fig8b.jpg
+## Output: outputs/estimation_results/app_table8.tex
+##         outputs/estimation_results/app_table9.tex
+##         outputs/estimation_results/app_table10.tex
+##         outputs/estimation_results/app_fig6.jpg
+##         outputs/estimation_results/app_fig7.jpg
+##         outputs/estimation_results/app_fig8a.jpg
+##         outputs/estimation_results/app_fig8b.jpg
 
 ## Packages ##
 library(tidyverse)
@@ -116,7 +117,7 @@ param_names =  bootstrap_sumstats %>% select(parameter) %>%
 
 bootstrap_col_names <- c('Parameter', 'Estimate', 'SD', 'SD within CI', '2.5%', '97.5%')
 
-sink(file.path(output_dir,"table8.tex"), append=FALSE, split=FALSE)
+sink(file.path(output_dir,"app_table8.tex"), append=FALSE, split=FALSE)
 bootstrap_sumstats %>%
   left_join(param_names) %>%
   relocate(pretty_param) %>%
@@ -151,11 +152,11 @@ binscatter(data = demo_project_item_df, y = q_at, x = qa_model_fit,pos="") +
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10))
   )
-saveLastFig("fig6")
+saveLastFig("app_fig6")
 ## End of Fig 6 ##
 
 ## Appendix Table 9 ## 
-sink(file.path(output_dir,"table9.tex"), append=FALSE, split=FALSE)
+sink(file.path(output_dir,"app_table9.tex"), append=FALSE, split=FALSE)
 
 qa_fit_lm <- (lm(q_at ~ qa_model_fit, data = demo_project_item_df))
 stargazer::stargazer(qa_fit_lm,
@@ -212,11 +213,11 @@ ggplot() +
   geom_abline(intercept = 0, slope = 1, color="red", linetype="dashed")+
   theme_minimal()
 
-saveLastFig("fig8a")
+saveLastFig("app_fig8a")
 ## End of Fig 8a ##
 
 ## Table 10 ##
-sink(file.path(output_dir,"table10.tex"), append=FALSE, split=FALSE)
+sink(file.path(output_dir,"app_table10.tex"), append=FALSE, split=FALSE)
 
 bid_fit_lm <- (lm(bid_unit_price ~ bid_fit_w_error, data = gmm_bid_fits_matched))
 stargazer::stargazer(bid_fit_lm, dep.var.labels = "Data Bid", covariate.labels = "Predicted Bid", omit.stat=c("adj.rsq","f", "ser"))
@@ -244,7 +245,7 @@ gmm_bid_fits_matched %>%
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10))
   )
-saveLastFig("fig7")
+saveLastFig("app_fig7")
 ## End of Figure 7 ##
 
 ## Figure 8b ##
@@ -309,5 +310,5 @@ compare %>%
         axis.title.y = element_text(margin = margin(r = 10))
   )
 
-saveLastFig("fig8b")
+saveLastFig("app_fig8b")
 ## End of Figure 8b ##

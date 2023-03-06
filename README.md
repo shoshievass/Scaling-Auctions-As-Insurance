@@ -435,15 +435,16 @@ The script `presentation/N_appendix_estimation_results.R` produces additional fi
 
 **Tables**:
 
-- Table 8: `outputs/estimation_results/table8.tex`
-- Table 9: `outputs/estimation_results/table9.tex`
-- Table 10: `outputs/estimation_results/table10.tex`
+- Table 8: `outputs/estimation_results/app_table8.tex`
+- Table 9: `outputs/estimation_results/app_table9.tex`
+- Table 10: `outputs/estimation_results/app_table10.tex`
 
 **Figures**:
 
-- Figure 6: `outputs/estimation_results/fig6.jpg`
-- Figure 7: `outputs/estimation_results/fig7.jpg`
-- Figure 8b: `outputs/estimation_results/fig8b.jpg`
+- Figure 6: `outputs/estimation_results/app_fig6.jpg`
+- Figure 7: `outputs/estimation_results/app_fig7.jpg`
+- Figure 8b: `outputs/estimation_results/app_fig8a.jpg`
+- Figure 8b: `outputs/estimation_results/app_fig8b.jpg`
 
 ### Appendix: Quantity model
 
