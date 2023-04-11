@@ -33,7 +33,7 @@ load(file.path("data","estimation_step1_output_minfit.rdata"))
 
 ## directory names for outputs
 output_dir = file.path("outputs","data_description")
-dir.create(output_dir)
+dir.create(output_dir, recursive = TRUE)
 
 saveLastFig <- function(fname){
   fpath = file.path(output_dir, paste0(fname, ".jpg"))
@@ -304,7 +304,8 @@ item_chars_df %>%
   ggplot(aes(x = diff_q)) + geom_histogram() +
   scale_x_continuous(labels = scales::percent) +
   labs(
-    x =  TeX('%$\\Delta$ Quantity by Item ID')
+    x =  TeX('%$\\Delta$ Quantity by Item ID'),
+    y = "Count"
   ) + theme_minimal() +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),

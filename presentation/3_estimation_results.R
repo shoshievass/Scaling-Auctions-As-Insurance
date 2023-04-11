@@ -129,7 +129,10 @@ rank_df <- empirical_bid_data %>% select(project_bidder_id, contract_no, bridge,
 ## Fig 5a ## 
 demo_project_item_df %>% ggplot(aes(x = sigma_t_fit)) +
   geom_histogram() +
-  labs(x = TeX("Quantity Standard Deviation: $\\sigma_{t,n}$"))+
+  labs(
+    x = TeX("Quantity Standard Deviation: $\\sigma_{t,n}$"),
+    y = "Count"
+  ) +
   theme_minimal() +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
@@ -406,7 +409,7 @@ reg_sum %>%
   filter(sds_resids > sd_resid_quantiles[2] & sds_resids < sd_resid_quantiles[20]) %>%
   ggplot(aes(x = sds_resids)) + geom_histogram() +
   scale_x_continuous() +
-  labs(x = TeX("Residuals in units of ($\\gamma)$ standard deviations"),
+  labs(x = TeX("Residuals in Units of ($\\gamma)$ Standard Deviations"),
        y = "Count") +
   theme_minimal() +
   theme(text = element_text(size=20),
