@@ -259,7 +259,7 @@ Several of the steps use an R package developed to plot binscatters. The relevan
 
 ### Step 1: Descriptive statistics
 
-The code in the script `presentation/1_data_description.R` generates the descriptive statistics in the paper. The script will generate a number of figures and tables. Outputs are stores in the directory `outputs/data_description/`.
+The code in the script `presentation/1_data_description.R` generates the descriptive statistics in the paper. The script will generate a number of figures and tables. Outputs are stored in the directory `outputs/data_description/`.
 
 **Language**. R.
 
