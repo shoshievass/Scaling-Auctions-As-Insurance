@@ -342,7 +342,7 @@ diff_q_df %>%
   scale_y_continuous(labels = scales::percent) +
   labs(
     x =  TeX('Mean %$\\Delta$ Quantity'),
-    y = TeX('St. Dev. %$\\Delta$ Quantity')
+    y = TeX('Standard Deviation %$\\Delta$ Quantity')
   ) + theme_minimal() +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),

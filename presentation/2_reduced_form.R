@@ -131,7 +131,6 @@ project_chars <- empirical_bid_data %>%
   summarize_all(mean) %>% ungroup()
 
 
-#
 bridge_empirical_bid_data <- empirical_bid_data %>%
   select(project_bidder_id,
          contract_no,
@@ -327,7 +326,7 @@ graph_data %>%
   scale_y_continuous(labels =scales::percent ) +
   labs(
     y =  TeX('| %$\\Delta$ Bid $t$ |'),
-    x =  TeX('Item Quantity Standard Dev')
+    x =  TeX('Item Quantity Standard Deviation')
   ) + theme_minimal() +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
@@ -350,7 +349,7 @@ graph_data %>%
   ) +
   scale_y_continuous(labels =scales::percent ) +
   labs(
-    x = TeX('Item Quantity Standard Dev'),
+    x = TeX('Item Quantity Standard Deviation'),
     y = TeX('%$\\Delta$ Proportion of Revenue from Item $t$')
   ) +
   theme_minimal() +
@@ -467,7 +466,7 @@ graph_data %>%
   scale_y_continuous(labels =scales::percent ) +
   labs(
     y =  TeX('| %$\\Delta$ Bid $t$ |'),
-    x =  TeX('Item Quantity Standard Dev')
+    x =  TeX('Item Quantity Standard Deviation')
   ) + theme_minimal() +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
@@ -709,7 +708,7 @@ least_variable_items %>%
   ggplot(aes(x = item_description, y = n)) + geom_col() +
   coord_flip() + 
   labs(
-    y = "Frequency Among Bottom 5% Standard Dev Instances",
+    y = "Frequency Among Bottom 5% Standard Deviation Instances",
     x = "Trimmed Item Description"
   )
 
@@ -734,7 +733,7 @@ most_variable_items %>%
   ggplot(aes(x = item_description, y = n)) + geom_col() +
   coord_flip() + 
   labs(
-    y = "Frequency Among Top 5% Standard Dev Instances",
+    y = "Frequency Among Top 5% Standard Deviation Instances",
     x = "Trimmed Item Description"
   )
 
