@@ -450,7 +450,7 @@ The script `presentation/N_appendix_estimation_results.R` produces additional fi
 
 The script `presentation/N_appendix_qamodel_estimate_table.R` summarizes the parameters that govern model-predicted quantities (quantities denoted in the paper as $q^a_t$). 
 
-The two parameters of interested are written in the paper as $\beta_q$ and $\beta_\sigma$. The code that estimates the parameters maps these two parameters to the following:
+The two parameters of interest are written in the paper as $\beta_q$ and $\beta_\sigma$. The code that estimates the parameters maps these two parameters to the following:
 
 - $\beta_q$: `beta`
 - $\beta_\sigma$: `gamma`
