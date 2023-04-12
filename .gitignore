@@ -24,8 +24,8 @@
 !tidy/Manifest.toml
 !r_info.txt
 
-!*binscattr/DESCRIPTION
-!*binscattr/NAMESPACE
+!**/binscattr/binscattr/DESCRIPTION
+!**/binscattr/binscattr/NAMESPACE
 
 .Rproj.user
 .ipynb_checkpoints
