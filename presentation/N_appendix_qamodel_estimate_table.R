@@ -9,7 +9,7 @@ library(ggthemes)
 
 library("shinystan")
 
-options(browser="chrome")
+options(browser = "chrome")
 
 gmm_input_1st_stage_data <- "estimation_step1_output_fullfit.rdata"
 load(file.path("data", gmm_input_1st_stage_data))
@@ -19,6 +19,6 @@ load(file.path("data", gmm_input_1st_stage_data))
 ## The ShinyStan application has a method to export a latex table of the estimates
 ## This is how we got Table 7 in the paper (after relabeling parameters for easy reading and pretty printing)
 ## We couldn't figure out how to automate this step
-launch_shinystan(qa_fit) 
+launch_shinystan(qa_fit)
 
 ## End of Table 7 ##

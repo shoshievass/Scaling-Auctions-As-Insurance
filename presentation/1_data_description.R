@@ -1,8 +1,8 @@
-##==================================================
+## ==================================================
 ##
 ## Script name: Tables and Figures 1. Data description
 ##
-## Project: Scaling Auctions as Insurance 
+## Project: Scaling Auctions as Insurance
 ##
 ## Purpose of script:  Create data description tables and figures
 ##
@@ -15,7 +15,7 @@
 ##         outputs/data_description/figure2a.jpg
 ##         outputs/data_description/figure2b.jpg
 ##
-##==================================================
+## ==================================================
 
 ## Libraries ##
 library(tidyverse)
@@ -25,18 +25,18 @@ library(glue)
 library(stargazer)
 
 ## To skip annoying warnings if just running through to replicate
-options(warn=-1)
+options(warn = -1)
 
 ## Load the data
 ### 1st stage estimates + transformed input data
-load(file.path("data","estimation_step1_output_minfit.rdata"))
+load(file.path("data", "estimation_step1_output_minfit.rdata"))
 
 ## directory names for outputs
-output_dir = file.path("outputs","data_description")
+output_dir <- file.path("outputs", "data_description")
 dir.create(output_dir, recursive = TRUE)
 
-saveLastFig <- function(fname){
-  fpath = file.path(output_dir, paste0(fname, ".jpg"))
+saveLastFig <- function(fname) {
+  fpath <- file.path(output_dir, paste0(fname, ".jpg"))
   ggsave(fpath)
 }
 
@@ -83,14 +83,14 @@ summary_df <- empirical_bid_data %>%
     extra_work_payment
   )
 
-sink(file.path(output_dir,"table1.tex"), append=FALSE, split=FALSE)
+sink(file.path(output_dir, "table1.tex"), append = FALSE, split = FALSE)
 summary_df %>%
   ungroup() %>%
   mutate(
     `Net Over-Cost (DOT Quantities) ($)` = bidder_revenue - office_score,
     `Net Over-Cost (Ex-Post Quantities) ($)` = bidder_revenue - office_expost,
-    `Net Over-Cost (Ex-Post Quantities) (%)` = 100*(bidder_revenue - office_expost)/office_expost,
-    proj_duration = proj_duration/364
+    `Net Over-Cost (Ex-Post Quantities) (%)` = 100 * (bidder_revenue - office_expost) / office_expost,
+    proj_duration = proj_duration / 364
   ) %>%
   select(
     -contract_no,
@@ -110,11 +110,13 @@ summary_df %>%
   mutate(
     `Num Auctions` = n()
   ) %>%
-  stargazer::stargazer(digits = 2,
-            summary.stat = c("mean","sd","p25", "median" ,"p75"))
+  stargazer::stargazer(
+    digits = 2,
+    summary.stat = c("mean", "sd", "p25", "median", "p75")
+  )
 
 sink()
-### End of Table 1 ### 
+### End of Table 1 ###
 
 
 ### Figure 1: Net Over-Cost (ex-post quantities) across bridge projects ###
@@ -123,24 +125,26 @@ summary_df %>%
   mutate(
     `$ Overruns` = (bidder_revenue - office_score)
   ) %>%
-  ggplot(aes(x=`$ Overruns`)) +
-  scale_x_continuous(labels = scales::dollar, lim=c(-4e+06, 4e+06)) +
+  ggplot(aes(x = `$ Overruns`)) +
+  scale_x_continuous(labels = scales::dollar, lim = c(-4e+06, 4e+06)) +
   geom_histogram() +
   theme_minimal() +
-  labs( x = "Overruns (Dollars)",
-        y = "Count"
+  labs(
+    x = "Overruns (Dollars)",
+    y = "Count"
   ) +
-  theme(axis.title=element_text(size=20)
-  ) +
-  theme(text = element_text(size=14),
-        axis.text.x = element_text(hjust = 0.7))
+  theme(axis.title = element_text(size = 20)) +
+  theme(
+    text = element_text(size = 14),
+    axis.text.x = element_text(hjust = 0.7)
+  )
 saveLastFig("fig1")
 
 ### End of Fig 1 ##
 
 ### Table 2 : Bidder Description ###
 ## Note: For the sake of clean presentation, some manual changes to column labels, row ordering and rounding were done to generate the exact table in the paper.
-firm_df <- bidder_project_level_df%>%
+firm_df <- bidder_project_level_df %>%
   group_by(bidder_id_seq) %>%
   mutate(num_aucs = n()) %>%
   ungroup() %>%
@@ -169,7 +173,8 @@ more_project_chars <- bidder_project_level_df %>%
 
 bidder_project_chars <- empirical_bid_data %>%
   left_join(
-    firm_df, by = c("project_bidder_id")
+    firm_df,
+    by = c("project_bidder_id")
   ) %>%
   select(
     bidder_id_sequential,
@@ -189,11 +194,11 @@ bidder_project_chars <- empirical_bid_data %>%
   left_join(more_project_chars, by = "project_bidder_id") %>%
   ungroup()
 
-bidder_project_desc <- bidder_project_chars 
+bidder_project_desc <- bidder_project_chars
 
 bidder_chars <- bidder_project_desc %>%
   mutate(
-    winner = ifelse(rank==1, 1, 0)
+    winner = ifelse(rank == 1, 1, 0)
   ) %>%
   group_by(bidder_id_sequential) %>%
   mutate(
@@ -212,8 +217,8 @@ bidder_project_chars %>%
   summarize(
     num_bids = n(),
     num_fringe = sum(fringe),
-    prop_fringe = sum(fringe)/num_bids,
-    num_dom = sum(1-fringe)
+    prop_fringe = sum(fringe) / num_bids,
+    num_dom = sum(1 - fringe)
   )
 
 sum_by_fringe <-
@@ -251,20 +256,22 @@ sum_by_fringe <-
     `Median Number of Wins Per Firm` = median(num_wins),
     `Mean Bid Submitted` = mean(bidder_score),
     `Mean Ex-Post Cost of Bid` = mean(bid_dot_expost_quantity),
-    `Mean Ex-Post Overrun of Bid` = mean(100 * (bid_dot_expost_quantity - office_cost_dot_expost_quantity)/office_cost_dot_expost_quantity),
+    `Mean Ex-Post Overrun of Bid` = mean(100 * (bid_dot_expost_quantity - office_cost_dot_expost_quantity) / office_cost_dot_expost_quantity),
     `Mean Capacity` = mean(capacity),
-    `Percent of Bids on Projects in the Same District` = mean(same_district)*100,
-    `Percent of Bids by Revenue Dominant Firms` = mean((1-fringe))*100,
-    `Mean Utilization Ratio` = mean(utilization)*100,
-    `Mean Specialization` = mean(bidder_specialization)*100
+    `Percent of Bids on Projects in the Same District` = mean(same_district) * 100,
+    `Percent of Bids by Revenue Dominant Firms` = mean((1 - fringe)) * 100,
+    `Mean Utilization Ratio` = mean(utilization) * 100,
+    `Mean Specialization` = mean(bidder_specialization) * 100
   ) %>%
   mutate_if(is.numeric, round, 2)
 
-sink(file.path(output_dir,"table2.tex"), append=FALSE, split=FALSE)
+sink(file.path(output_dir, "table2.tex"), append = FALSE, split = FALSE)
 t(sum_by_fringe) %>%
-  stargazer::stargazer(title="Comparison of Firms Participating in <30 vs 30+ Auctions",
-                       summary=F,
-                       digits=2)
+  stargazer::stargazer(
+    title = "Comparison of Firms Participating in <30 vs 30+ Auctions",
+    summary = F,
+    digits = 2
+  )
 sink()
 
 ### End of Table 2 ###
@@ -295,21 +302,24 @@ item_chars_df <- demo_project_item_df %>%
   ) %>%
   ungroup() %>%
   mutate(
-    diff_q = (q_at - q_ot)/q_ot,
+    diff_q = (q_at - q_ot) / q_ot,
     zero_expost_q = ifelse(q_at == 0, 1, 0),
     zero_diff_q = ifelse(diff_q == 0, 1, 0)
   )
 
 item_chars_df %>%
-  ggplot(aes(x = diff_q)) + geom_histogram() +
+  ggplot(aes(x = diff_q)) +
+  geom_histogram() +
   scale_x_continuous(labels = scales::percent) +
   labs(
-    x =  TeX('%$\\Delta$ Quantity by Item ID'),
+    x = TeX("%$\\Delta$ Quantity by Item ID"),
     y = "Count"
-  ) + theme_minimal() +
-  theme(text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10))
+  ) +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10))
   )
 
 saveLastFig("fig2a")
@@ -318,7 +328,7 @@ saveLastFig("fig2a")
 ## Figure 2b ##
 diff_q_df <- item_chars_df %>%
   mutate(
-    diff_q = (q_at - q_ot)/q_ot
+    diff_q = (q_at - q_ot) / q_ot
   ) %>%
   group_by(item_id_sequential) %>%
   summarize(
@@ -337,19 +347,19 @@ diff_q_df %>%
   arrange(
     sd_diff_q
   ) %>%
-  ggplot(aes(x = mean_diff_q, y = sd_diff_q)) + geom_point() +
+  ggplot(aes(x = mean_diff_q, y = sd_diff_q)) +
+  geom_point() +
   scale_x_continuous(labels = scales::percent) +
   scale_y_continuous(labels = scales::percent) +
   labs(
-    x =  TeX('Mean %$\\Delta$ Quantity'),
-    y = TeX('Standard Deviation %$\\Delta$ Quantity')
-  ) + theme_minimal() +
-  theme(text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10))
+    x = TeX("Mean %$\\Delta$ Quantity"),
+    y = TeX("Standard Deviation %$\\Delta$ Quantity")
+  ) +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10))
   )
 saveLastFig("fig2b")
 ## End of Fig2b ##
-
-
-
