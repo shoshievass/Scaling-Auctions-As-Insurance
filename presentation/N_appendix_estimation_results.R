@@ -212,7 +212,9 @@ ggplot() +
     y = "Data Bid Quantiles"
   ) +
   geom_abline(intercept = 0, slope = 1, color="red", linetype="dashed")+
-  theme_minimal() + theme(aspect.ratio = 3/4)
+  theme_minimal() + theme(
+    text = element_text(size=20),
+    aspect.ratio = 3/4)
 
 saveLastFig("app_fig8a")
 ## End of Fig 8a ##
