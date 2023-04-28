@@ -67,9 +67,9 @@ load(file.path("data", "estimation_step1_output_minfit.rdata"))
 output_dir <- file.path("outputs", "reduced_form")
 dir.create(output_dir)
 
-saveLastFig <- function(fname) {
-  fpath <- file.path(output_dir, paste0(fname, ".jpg"))
-  ggsave(fpath)
+saveLastFig <- function(fname){
+  fpath = file.path(output_dir, paste0(fname, ".jpg"))
+  ggsave(fpath, height=7, width=7 * 4/3)
 }
 
 
@@ -219,11 +219,10 @@ graph_data_full %>%
   ) +
   theme_minimal() +
   colScale +
-  theme(
-    text = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 10)),
-    axis.title.y = element_text(margin = margin(r = 10))
-  )
+  theme(text = element_text(size=20),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10))
+  ) + theme(aspect.ratio = 3/4)
 saveLastFig("fig3a")
 ## End of Fig 3a ##
 
@@ -280,11 +279,10 @@ trunc_graph_data_compare %>%
     y = TeX("Second Place %$\\Delta$ Bid"),
     x = TeX("Winner %$\\Delta$ Bid")
   ) + theme_minimal() +
-  theme(
-    text = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 10)),
-    axis.title.y = element_text(margin = margin(r = 10))
-  )
+  theme(text = element_text(size=20),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10))
+  ) + theme(aspect.ratio = 3/4)
 
 saveLastFig("fig3b")
 ## End of fig 3b ##
@@ -339,11 +337,10 @@ graph_data %>%
     y = TeX("| %$\\Delta$ Bid $t$ |"),
     x = TeX("Item Quantity Standard Deviation")
   ) + theme_minimal() +
-  theme(
-    text = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 10)),
-    axis.title.y = element_text(margin = margin(r = 10))
-  )
+  theme(text = element_text(size=20),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10))
+  ) + theme(aspect.ratio = 3/4)
 
 saveLastFig("fig4a")
 
@@ -366,11 +363,10 @@ graph_data %>%
     y = TeX("%$\\Delta$ Proportion of Revenue from Item $t$")
   ) +
   theme_minimal() +
-  theme(
-    text = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 10)),
-    axis.title.y = element_text(margin = margin(r = 10))
-  )
+  theme(text = element_text(size=20),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10))
+  ) + theme(aspect.ratio = 3/4)
 
 saveLastFig("fig4b")
 
@@ -424,11 +420,10 @@ graph_data_close_bidders %>%
     x = TeX("%$\\Delta$ Quantity $t$")
   ) + theme_minimal() +
   colScale +
-  theme(
-    text = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 10)),
-    axis.title.y = element_text(margin = margin(r = 10))
-  )
+  theme(text = element_text(size=20),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10))
+  ) + theme(aspect.ratio = 3/4)
 saveLastFig("app_fig11a")
 
 
@@ -485,11 +480,10 @@ graph_data %>%
     y = TeX("| %$\\Delta$ Bid $t$ |"),
     x = TeX("Item Quantity Standard Deviation")
   ) + theme_minimal() +
-  theme(
-    text = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 10)),
-    axis.title.y = element_text(margin = margin(r = 10))
-  )
+  theme(text = element_text(size=20),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10))
+  ) + theme(aspect.ratio = 3/4)
 
 saveLastFig("app_fig11b")
 
@@ -553,11 +547,10 @@ graph_data_compare4 %>%
   ) +
   theme_minimal() +
   colScale +
-  theme(
-    text = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 10)),
-    axis.title.y = element_text(margin = margin(r = 10))
-  )
+  theme(text = element_text(size=20),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10))
+  ) + theme(aspect.ratio = 3/4)
 
 saveLastFig("app_fig10a")
 
@@ -647,11 +640,10 @@ trunc_graph_data_compare4 %>%
     x =  TeX("Winner %$\\Delta$ Bid")
   ) +
   theme(
-    text = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 10)),
-    axis.title.y = element_text(margin = margin(r = 10), )
-  )
-
+        text = element_text(size=20),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10),)
+  ) + theme(aspect.ratio = 3/4)
 
 saveLastFig("app_fig10b")
 
@@ -732,7 +724,7 @@ least_variable_items %>%
   labs(
     y = "Frequency Among Bottom 5% Standard Deviation Instances",
     x = "Trimmed Item Description"
-  )
+  ) + theme(aspect.ratio = 3/4)
 
 saveLastFig("app_fig13")
 
@@ -758,7 +750,7 @@ most_variable_items %>%
   labs(
     y = "Frequency Among Top 5% Standard Deviation Instances",
     x = "Trimmed Item Description"
-  )
+  ) + theme(aspect.ratio = 3/4)
 
 saveLastFig("app_fig14")
 

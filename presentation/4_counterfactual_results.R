@@ -31,11 +31,6 @@ input_dir <- file.path("data", "estimation_step7_counterfactuals")
 output_dir <- file.path("outputs", "cf_results")
 dir.create(output_dir)
 
-saveLastFig <- function(fname) {
-  fpath <- file.path(output_dir, paste0(fname, ".jpg"))
-  ggsave(fpath)
-}
-
 ## To skip annoying warnings if just running through to replicate
 options(warn = -1)
 
@@ -43,18 +38,13 @@ type_distribution_df <- read_csv(file.path("data", "estimation_step4_cf_inputs",
 
 w <- 1000
 
-saveLastFig <- function(fname) {
-  fpath <- paste0(file.path(data_desc_dir, fname), ".jpg")
-  ggsave(fpath)
-}
-
-truncate_data <- function(x, lb, ub) {
-  lower_quant <- quantile(x, lb, na.rm = T)
-  upper_quant <- quantile(x, ub, na.rm = T)
-  x[x < lower_quant] <- NA
-  x[x > upper_quant] <- NA
-  x[is.infinite(x)] <- NA
-  x[is.na(x)] <- NA
+truncate_data = function(x, lb, ub) {
+  lower_quant = quantile(x, lb, na.rm=T)
+  upper_quant = quantile(x, ub, na.rm=T)
+  x[x < lower_quant] = NA
+  x[x > upper_quant] = NA
+  x[is.infinite(x)] = NA
+  x[is.na(x)] = NA
   return(x)
 }
 

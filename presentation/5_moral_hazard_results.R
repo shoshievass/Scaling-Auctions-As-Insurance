@@ -28,11 +28,6 @@ input_dir <- file.path("data", "estimation_step8_moralhazard")
 output_dir <- file.path("outputs", "mh_results")
 dir.create(output_dir)
 
-saveLastFig <- function(fname) {
-  fpath <- file.path(output_dir, paste0(fname, ".jpg"))
-  ggsave(fpath)
-}
-
 ## To skip annoying warnings if just running through to replicate
 options(warn = -1)
 
