@@ -38,13 +38,13 @@ type_distribution_df <- read_csv(file.path("data", "estimation_step4_cf_inputs",
 
 w <- 1000
 
-truncate_data = function(x, lb, ub) {
-  lower_quant = quantile(x, lb, na.rm=T)
-  upper_quant = quantile(x, ub, na.rm=T)
-  x[x < lower_quant] = NA
-  x[x > upper_quant] = NA
-  x[is.infinite(x)] = NA
-  x[is.na(x)] = NA
+truncate_data <- function(x, lb, ub) {
+  lower_quant <- quantile(x, lb, na.rm = T)
+  upper_quant <- quantile(x, ub, na.rm = T)
+  x[x < lower_quant] <- NA
+  x[x > upper_quant] <- NA
+  x[is.infinite(x)] <- NA
+  x[is.na(x)] <- NA
   return(x)
 }
 
