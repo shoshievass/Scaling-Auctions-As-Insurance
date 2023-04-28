@@ -37,7 +37,7 @@ dir.create(output_dir, recursive = TRUE)
 
 saveLastFig <- function(fname){
   fpath = file.path(output_dir, paste0(fname, ".jpg"))
-  ggsave(fpath)
+  ggsave(fpath, height=7, width=7 * 4/3)
 }
 
 ## Table 1 : Summary Statistics ##
@@ -133,7 +133,8 @@ summary_df %>%
   theme(axis.title=element_text(size=20)
   ) +
   theme(text = element_text(size=14),
-        axis.text.x = element_text(hjust = 0.7))
+        axis.text.x = element_text(hjust = 0.7)) + 
+  theme(aspect.ratio = 3/4)
 saveLastFig("fig1")
 
 ### End of Fig 1 ##
@@ -310,7 +311,8 @@ item_chars_df %>%
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10))
-  )
+  ) + 
+  theme(aspect.ratio = 3/4)
 
 saveLastFig("fig2a")
 ## End of Fig2a ##
@@ -347,7 +349,8 @@ diff_q_df %>%
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10))
-  )
+  ) + 
+  theme(aspect.ratio = 3/4)
 saveLastFig("fig2b")
 ## End of Fig2b ##
 

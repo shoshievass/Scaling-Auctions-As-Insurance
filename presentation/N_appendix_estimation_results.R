@@ -67,7 +67,7 @@ theme_set(theme_minimal())
 
 saveLastFig <- function(fname){
   fpath = file.path(output_dir, paste0(fname, ".jpg"))
-  ggsave(fpath)
+  ggsave(fpath, height=7, width=7 * 4/3)
 }
 
 ## To skip annoying warnings if just running through to replicate
@@ -151,7 +151,8 @@ binscatter(data = demo_project_item_df, y = q_at, x = qa_model_fit,pos="") +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10))
-  )
+  ) + theme(aspect.ratio = 3/4)
+
 saveLastFig("app_fig6")
 ## End of Fig 6 ##
 
@@ -211,7 +212,7 @@ ggplot() +
     y = "Data Bid Quantiles"
   ) +
   geom_abline(intercept = 0, slope = 1, color="red", linetype="dashed")+
-  theme_minimal()
+  theme_minimal() + theme(aspect.ratio = 3/4)
 
 saveLastFig("app_fig8a")
 ## End of Fig 8a ##
@@ -244,7 +245,9 @@ gmm_bid_fits_matched %>%
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10))
-  )
+  ) + theme(aspect.ratio = 3/4)
+
+
 saveLastFig("app_fig7")
 ## End of Figure 7 ##
 
@@ -308,7 +311,7 @@ compare %>%
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10))
-  )
+  ) + theme(aspect.ratio = 3/4)
 
 saveLastFig("app_fig8b")
 ## End of Figure 8b ##

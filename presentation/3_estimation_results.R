@@ -64,7 +64,7 @@ dir.create(output_dir)
 
 saveLastFig <- function(fname){
   fpath = file.path(output_dir, paste0(fname, ".jpg"))
-  ggsave(fpath)
+  ggsave(fpath, height=7, width=7 * 4/3)
 }
 
 ## To skip annoying warnings if just running through to replicate
@@ -137,7 +137,7 @@ demo_project_item_df %>% ggplot(aes(x = sigma_t_fit)) +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10))
-  )
+  ) + theme(aspect.ratio = 3/4)
 saveLastFig("fig5a")
 ## End of Fig 5a ##
 
@@ -191,7 +191,8 @@ df %>%
   theme_minimal() +
   theme(text = element_text(size=24),
         axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)))
+        axis.title.y = element_text(margin = margin(r = 10))) + 
+  theme(aspect.ratio = 3/4)
 
 saveLastFig("fig5b")
 ## End of Fig 5b ##
@@ -415,7 +416,7 @@ reg_sum %>%
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10))
-  )
+  ) + theme(aspect.ratio = 3/4)
 
 saveLastFig("app_fig9")
 
