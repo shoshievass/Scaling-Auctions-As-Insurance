@@ -65,9 +65,11 @@ dir.create(output_dir)
 
 theme_set(theme_minimal())
 
-saveLastFig <- function(fname) {
-  fpath <- file.path(output_dir, paste0(fname, ".jpg"))
-  ggsave(fpath, height = 7, width = 7 * 4 / 3)
+ASPECT_RATIO <- 3/4
+
+saveLastFig <- function(fname){
+  fpath = file.path(output_dir, paste0(fname, ".jpg"))
+  ggsave(fpath, height=7, width=7 / ASPECT_RATIO)
 }
 
 ## To skip annoying warnings if just running through to replicate
@@ -152,11 +154,10 @@ binscatter(data = demo_project_item_df, y = q_at, x = qa_model_fit, pos = "") +
     y = "Actual Quantity",
     x = "Predicted Quantity Mean"
   ) + theme_minimal() +
-  theme(
-    text = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 10)),
-    axis.title.y = element_text(margin = margin(r = 10))
-  ) + theme(aspect.ratio = 3 / 4)
+  theme(text = element_text(size=20),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10)), 
+        aspect.ratio = ASPECT_RATIO)
 
 saveLastFig("app_fig6")
 ## End of Fig 6 ##
@@ -218,12 +219,10 @@ ggplot() +
     x = "Predicted Bid Quantiles",
     y = "Data Bid Quantiles"
   ) +
-  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
-  theme_minimal() +
-  theme(
-    text = element_text(size = 20),
-    aspect.ratio = 3 / 4
-  )
+  geom_abline(intercept = 0, slope = 1, color="red", linetype="dashed")+
+  theme_minimal() + theme(
+    text = element_text(size=20),
+    aspect.ratio = ASPECT_RATIO)
 
 saveLastFig("app_fig8a")
 ## End of Fig 8a ##
@@ -253,12 +252,10 @@ gmm_bid_fits_matched %>%
   ) +
   geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
   theme_minimal() +
-  theme(
-    text = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 10)),
-    axis.title.y = element_text(margin = margin(r = 10))
-  ) +
-  theme(aspect.ratio = 3 / 4)
+  theme(text = element_text(size=20),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10)), 
+        aspect.ratio = ASPECT_RATIO)
 
 
 saveLastFig("app_fig7")
@@ -325,12 +322,10 @@ compare %>%
   ) +
   geom_abline(aes(intercept = 0, slope = 1), color = "red", linetype = "dashed") +
   theme_minimal() +
-  theme(
-    text = element_text(size = 20),
-    axis.title.x = element_text(margin = margin(t = 10)),
-    axis.title.y = element_text(margin = margin(r = 10))
-  ) +
-  theme(aspect.ratio = 3 / 4)
+  theme(text = element_text(size=20),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10)), 
+        aspect.ratio = ASPECT_RATIO)
 
 saveLastFig("app_fig8b")
 ## End of Figure 8b ##
