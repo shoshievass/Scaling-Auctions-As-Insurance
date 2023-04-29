@@ -35,9 +35,11 @@ load(file.path("data","estimation_step1_output_minfit.rdata"))
 output_dir = file.path("outputs","data_description")
 dir.create(output_dir, recursive = TRUE)
 
+ASPECT_RATIO <- 3/4
+
 saveLastFig <- function(fname){
   fpath = file.path(output_dir, paste0(fname, ".jpg"))
-  ggsave(fpath, height=7, width=7 * 4/3)
+  ggsave(fpath, height=7, width=7 / ASPECT_RATIO)
 }
 
 ## Table 1 : Summary Statistics ##
@@ -130,11 +132,10 @@ summary_df %>%
   labs( x = "Overruns (Dollars)",
         y = "Count"
   ) +
-  theme(axis.title=element_text(size=20)
-  ) +
-  theme(text = element_text(size=14),
-        axis.text.x = element_text(hjust = 0.7)) + 
-  theme(aspect.ratio = 3/4)
+  theme(axis.title=element_text(size=20), 
+        text = element_text(size=14),
+        axis.text.x = element_text(hjust = 0.7), 
+        aspect.ratio = ASPECT_RATIO)
 saveLastFig("fig1")
 
 ### End of Fig 1 ##
@@ -310,9 +311,8 @@ item_chars_df %>%
   ) + theme_minimal() +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10))
-  ) + 
-  theme(aspect.ratio = 3/4)
+        axis.title.y = element_text(margin = margin(r = 10)), 
+        aspect.ratio = ASPECT_RATIO)
 
 saveLastFig("fig2a")
 ## End of Fig2a ##
@@ -348,9 +348,8 @@ diff_q_df %>%
   ) + theme_minimal() +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10))
-  ) + 
-  theme(aspect.ratio = 3/4)
+        axis.title.y = element_text(margin = margin(r = 10)), 
+        aspect.ratio = ASPECT_RATIO)
 saveLastFig("fig2b")
 ## End of Fig2b ##
 
