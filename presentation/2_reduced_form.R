@@ -217,7 +217,10 @@ graph_data_full %>%
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO)
+        aspect.ratio = ASPECT_RATIO,
+        legend.position = c(0.2, 0.9),
+        legend.background = element_rect(fill="white", size=0.5, linetype="solid"),
+        legend.direction = "horizontal")
 saveLastFig("fig3a")
 ## End of Fig 3a ##
 
@@ -414,7 +417,10 @@ graph_data_close_bidders %>%
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO)
+        aspect.ratio = ASPECT_RATIO,
+        legend.position = c(0.26, 0.9), 
+        legend.background = element_rect(fill="white", size=0.5, linetype="solid"), 
+        legend.direction = "horizontal")
 saveLastFig("app_fig11a")
 
 
@@ -538,9 +544,11 @@ graph_data_compare4 %>%
   colScale +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)), 
-        
-        aspect.ratio = ASPECT_RATIO)
+        axis.title.y = element_text(margin = margin(r = 10)),
+        aspect.ratio = ASPECT_RATIO,
+        legend.position = c(0.35, 0.9), 
+        legend.background = element_rect(fill="white", size=0.5, linetype="solid"), 
+        legend.direction = "horizontal")
 
 saveLastFig("app_fig10a")
 
@@ -632,7 +640,10 @@ trunc_graph_data_compare4 %>%
         text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO)
+        aspect.ratio = ASPECT_RATIO,
+        legend.position = c(0.29, 0.91), 
+        legend.background = element_rect(fill="white", size=0.5, linetype="solid"), 
+        legend.direction = "horizontal")
 
 saveLastFig("app_fig10b")
 
