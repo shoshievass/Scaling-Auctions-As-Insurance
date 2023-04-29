@@ -17,7 +17,7 @@ load(file.path("data", gmm_input_1st_stage_data))
 ## Table 7 ##
 
 ## The ShinyStan application has a method to export a latex table of the estimates
-## This is how we got Table 7 in the paper (after relabeling parameters for easy readinga and pretty printing)
+## This is how we got Table 7 in the paper (after relabeling parameters for easy reading and pretty printing)
 ## We couldn't figure out how to automate this step
 launch_shinystan(qa_fit) 
 

@@ -62,9 +62,11 @@ gmm_output <- read_csv(file.path("data","estimation_step3","second_stage_estimat
 output_dir = file.path("outputs","estimation_results")
 dir.create(output_dir)
 
+ASPECT_RATIO <- 3/4
+
 saveLastFig <- function(fname){
   fpath = file.path(output_dir, paste0(fname, ".jpg"))
-  ggsave(fpath)
+  ggsave(fpath, height=7, width=7 / ASPECT_RATIO)
 }
 
 ## To skip annoying warnings if just running through to replicate
@@ -129,12 +131,15 @@ rank_df <- empirical_bid_data %>% select(project_bidder_id, contract_no, bridge,
 ## Fig 5a ## 
 demo_project_item_df %>% ggplot(aes(x = sigma_t_fit)) +
   geom_histogram() +
-  labs(x = TeX("Quantity Standard Deviation: $\\sigma_{t,n}$"))+
+  labs(
+    x = TeX("Quantity Standard Deviation: $\\sigma_{t,n}$"),
+    y = "Count"
+  ) +
   theme_minimal() +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
         axis.title.y = element_text(margin = margin(r = 10))
-  )
+  ) + theme(aspect.ratio = ASPECT_RATIO)
 saveLastFig("fig5a")
 ## End of Fig 5a ##
 
@@ -188,7 +193,8 @@ df %>%
   theme_minimal() +
   theme(text = element_text(size=24),
         axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)))
+        axis.title.y = element_text(margin = margin(r = 10))) + 
+  theme(aspect.ratio = ASPECT_RATIO)
 
 saveLastFig("fig5b")
 ## End of Fig 5b ##
@@ -406,12 +412,13 @@ reg_sum %>%
   filter(sds_resids > sd_resid_quantiles[2] & sds_resids < sd_resid_quantiles[20]) %>%
   ggplot(aes(x = sds_resids)) + geom_histogram() +
   scale_x_continuous() +
-  labs(x = TeX("Residuals in units of ($\\gamma)$ standard deviations"),
+  labs(x = TeX("Residuals in Units of ($\\gamma)$ Standard Deviations"),
        y = "Count") +
   theme_minimal() +
   theme(text = element_text(size=20),
         axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10))
+        axis.title.y = element_text(margin = margin(r = 10)), 
+        aspect.ratio = ASPECT_RATIO
   )
 
 saveLastFig("app_fig9")

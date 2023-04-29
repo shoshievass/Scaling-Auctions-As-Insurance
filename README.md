@@ -259,7 +259,7 @@ Several of the steps use an R package developed to plot binscatters. The relevan
 
 ### Step 1: Descriptive statistics
 
-The code in the script `presentation/1_data_description.R` generates the descriptive statistics in the paper. The script will generate a number of figures and tables. Outputs are stores in the directory `outputs/data_description/`.
+The code in the script `presentation/1_data_description.R` generates the descriptive statistics in the paper. The script will generate a number of figures and tables. Outputs are stored in the directory `outputs/data_description/`.
 
 **Language**. R.
 
@@ -450,7 +450,7 @@ The script `presentation/N_appendix_estimation_results.R` produces additional fi
 
 The script `presentation/N_appendix_qamodel_estimate_table.R` summarizes the parameters that govern model-predicted quantities (quantities denoted in the paper as $q^a_t$). 
 
-The two parameters of interested are written in the paper as $\beta_q$ and $\beta_\sigma$. The code that estimates the parameters maps these two parameters to the following:
+The two parameters of interest are written in the paper as $\beta_q$ and $\beta_\sigma$. The code that estimates the parameters maps these two parameters to the following:
 
 - $\beta_q$: `beta`
 - $\beta_\sigma$: `gamma`
