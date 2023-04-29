@@ -35,11 +35,11 @@ load(file.path("data", "estimation_step1_output_minfit.rdata"))
 output_dir <- file.path("outputs", "data_description")
 dir.create(output_dir, recursive = TRUE)
 
-ASPECT_RATIO <- 3/4
+ASPECT_RATIO <- 3 / 4
 
-saveLastFig <- function(fname){
-  fpath = file.path(output_dir, paste0(fname, ".jpg"))
-  ggsave(fpath, height=7, width=7 / ASPECT_RATIO)
+saveLastFig <- function(fname) {
+  fpath <- file.path(output_dir, paste0(fname, ".jpg"))
+  ggsave(fpath, height = 7, width = 7 / ASPECT_RATIO)
 }
 
 ## Table 1 : Summary Statistics ##
@@ -135,10 +135,12 @@ summary_df %>%
     x = "Overruns (Dollars)",
     y = "Count"
   ) +
-  theme(axis.title=element_text(size=20), 
-        text = element_text(size=14),
-        axis.text.x = element_text(hjust = 0.7), 
-        aspect.ratio = ASPECT_RATIO)
+  theme(
+    axis.title = element_text(size = 20),
+    text = element_text(size = 14),
+    axis.text.x = element_text(hjust = 0.7),
+    aspect.ratio = ASPECT_RATIO
+  )
 saveLastFig("fig1")
 
 ### End of Fig 1 ##
@@ -315,11 +317,14 @@ item_chars_df %>%
   labs(
     x = TeX("%$\\Delta$ Quantity by Item ID"),
     y = "Count"
-  ) + theme_minimal() +
-  theme(text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO)
+  ) +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    aspect.ratio = ASPECT_RATIO
+  )
 
 saveLastFig("fig2a")
 ## End of Fig2a ##
@@ -351,12 +356,15 @@ diff_q_df %>%
   scale_x_continuous(labels = scales::percent) +
   scale_y_continuous(labels = scales::percent) +
   labs(
-    x =  TeX('Mean %$\\Delta$ Quantity'),
-    y = TeX('Standard Deviation %$\\Delta$ Quantity')
-  ) + theme_minimal() +
-  theme(text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO)
+    x = TeX("Mean %$\\Delta$ Quantity"),
+    y = TeX("Standard Deviation %$\\Delta$ Quantity")
+  ) +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    aspect.ratio = ASPECT_RATIO
+  )
 saveLastFig("fig2b")
 ## End of Fig2b ##
