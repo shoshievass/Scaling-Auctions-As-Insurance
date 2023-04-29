@@ -1,8 +1,8 @@
-##==================================================
+## ==================================================
 ##
 ## Script name: Tables and Figures 2. Reduced Form
 ##
-## Project: Scaling Auctions as Insurance 
+## Project: Scaling Auctions as Insurance
 ##
 ## Purpose of script:  Create data description tables and figures
 ##
@@ -20,9 +20,9 @@
 ##         outputs/reduced_form/app_fig13.jpg
 ##         outputs/reduced_form/app_fig14.jpg
 ##
-##==================================================
+## ==================================================
 
-## Libraries ## 
+## Libraries ##
 library(tidyverse)
 library(ggthemes)
 library(latex2exp)
@@ -37,41 +37,41 @@ if (!dir.exists("presentation/.library")) {
 }
 
 # Check if binscattr is installed
-if (!requireNamespace("binscattr", lib.loc="presentation/.library/")) {
+if (!requireNamespace("binscattr", lib.loc = "presentation/.library/")) {
   # Tell the user we're installing binscattr
   message("Installing binscattr to presentation/.library/")
 
   # If not, install it
   devtools::install_local(
-    "presentation/binscattr/binscattr/", 
-    upgrade="ask", 
-    force=TRUE,
-    lib="presentation/.library/",
+    "presentation/binscattr/binscattr/",
+    upgrade = "ask",
+    force = TRUE,
+    lib = "presentation/.library/",
     build_vignettes = FALSE
   )
 }
 
 # Load binscattr
-library(binscattr, lib.loc="presentation/.library/")
+library(binscattr, lib.loc = "presentation/.library/")
 
 ## To skip annoying warnings if just running through to replicate
-options(warn=-1)
+options(warn = -1)
 
 theme_set(theme_minimal())
 
 ## Load the data
 ### 1st stage estimates + transformed input data
-load(file.path("data","estimation_step1_output_minfit.rdata"))
+load(file.path("data", "estimation_step1_output_minfit.rdata"))
 
 ## directory names for outputs
-output_dir = file.path("outputs","reduced_form")
+output_dir <- file.path("outputs", "reduced_form")
 dir.create(output_dir)
 
-ASPECT_RATIO <- 3/4
+ASPECT_RATIO <- 3 / 4
 
-saveLastFig <- function(fname){
-  fpath = file.path(output_dir, paste0(fname, ".jpg"))
-  ggsave(fpath, height=7, width=7 / ASPECT_RATIO)
+saveLastFig <- function(fname) {
+  fpath <- file.path(output_dir, paste0(fname, ".jpg"))
+  ggsave(fpath, height = 7, width = 7 / ASPECT_RATIO)
 }
 
 
@@ -127,32 +127,38 @@ project_chars <- empirical_bid_data %>%
   summarize_all(first) %>%
   ungroup() %>%
   left_join(more_project_chars, by = "project_bidder_id") %>%
-  select(-project_bidder_id,
-         -project_id_sequential) %>%
+  select(
+    -project_bidder_id,
+    -project_id_sequential
+  ) %>%
   group_by(contract_no) %>%
-  summarize_all(mean) %>% ungroup()
+  summarize_all(mean) %>%
+  ungroup()
 
 
 bridge_empirical_bid_data <- empirical_bid_data %>%
-  select(project_bidder_id,
-         contract_no,
-         project_id_sequential,
-         project_type_id,
-         item_id_sequential,
-         bidder_id_sequential,
-         bridge,
-         bid_unit_price,
-         office_unit_price,
-         old_item_id,
-         q_at,
-         q_ot,
-         num_bidders,
-         rank,
-         extra_work_payment,
-         item_description) %>%
+  select(
+    project_bidder_id,
+    contract_no,
+    project_id_sequential,
+    project_type_id,
+    item_id_sequential,
+    bidder_id_sequential,
+    bridge,
+    bid_unit_price,
+    office_unit_price,
+    old_item_id,
+    q_at,
+    q_ot,
+    num_bidders,
+    rank,
+    extra_work_payment,
+    item_description
+  ) %>%
   dplyr::filter(bridge == 1) %>%
   left_join(
-    qa_model_df, by = c("contract_no","old_item_id")
+    qa_model_df,
+    by = c("contract_no", "old_item_id")
   )
 
 ### Check for symmetry across bidders
@@ -171,8 +177,8 @@ graph_data_full <- bridge_empirical_bid_data %>%
     rank
   ) %>%
   mutate(
-    delta_bid = (bid_unit_price - office_unit_price)/office_unit_price,
-    delta_q = (q_at - q_ot)/q_ot
+    delta_bid = (bid_unit_price - office_unit_price) / office_unit_price,
+    delta_q = (q_at - q_ot) / q_ot
   ) %>%
   group_by(contract_no) %>%
   mutate(
@@ -182,45 +188,48 @@ graph_data_full <- bridge_empirical_bid_data %>%
   ) %>%
   ungroup() %>%
   mutate(
-    bid_weight_exante = (q_ot*bid_unit_price)/bidder_total_exante,
-    bid_weight_expost = (q_at * bid_unit_price)/bidder_total,
-    estimate_cost_weight = (q_ot * office_unit_price)/office_total
+    bid_weight_exante = (q_ot * bid_unit_price) / bidder_total_exante,
+    bid_weight_expost = (q_at * bid_unit_price) / bidder_total,
+    estimate_cost_weight = (q_ot * office_unit_price) / office_total
   ) %>%
   left_join(project_chars)
 
-ptiles_deltabid = quantile(graph_data_full$delta_bid, probs=seq(0,1,0.01))
-ptiles_deltaq = quantile(graph_data_full$delta_q, probs=seq(0,1,0.01))
-ptiles_sigmat = quantile(graph_data_full$sigma_t, probs=seq(0,1,0.01))
+ptiles_deltabid <- quantile(graph_data_full$delta_bid, probs = seq(0, 1, 0.01))
+ptiles_deltaq <- quantile(graph_data_full$delta_q, probs = seq(0, 1, 0.01))
+ptiles_sigmat <- quantile(graph_data_full$sigma_t, probs = seq(0, 1, 0.01))
 
-myColors <- brewer.pal(5,"Set1")
+myColors <- brewer.pal(5, "Set1")
 names(myColors) <- levels(graph_data_full$rank)
-colScale <- scale_colour_manual(name = "Rank",values = myColors)
+colScale <- scale_colour_manual(name = "Rank", values = myColors)
 
 graph_data_full %>%
   dplyr::filter(
     delta_bid > ptiles_deltabid[2] & delta_bid < ptiles_deltabid[99]
   ) %>%
   dplyr::filter(delta_q < ptiles_deltaq[99]) %>%
-  binscatter( y=delta_bid, x =delta_q,
-              grouping_var = rank,
-              # pos="",
-              controls=c("project_type_id","office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id","num_items","num_bidders","item_id_sequential")
+  binscatter(
+    y = delta_bid, x = delta_q,
+    grouping_var = rank,
+    # pos="",
+    controls = c("project_type_id", "office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id", "num_items", "num_bidders", "item_id_sequential")
   ) +
-  scale_x_continuous(labels =scales::percent ) +
-  scale_y_continuous(labels =scales::percent ) +
+  scale_x_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::percent) +
   labs(
-    y =  TeX('%$\\Delta$ Bid $t$'),
-    x =  TeX('%$\\Delta$ Quantity $t$')
+    y = TeX("%$\\Delta$ Bid $t$"),
+    x = TeX("%$\\Delta$ Quantity $t$")
   ) +
   theme_minimal() +
   colScale +
-  theme(text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO,
-        legend.position = c(0.2, 0.9),
-        legend.background = element_rect(fill="white", size=0.5, linetype="solid"),
-        legend.direction = "horizontal")
+  theme(
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    aspect.ratio = ASPECT_RATIO,
+    legend.position = c(0.2, 0.9),
+    legend.background = element_rect(fill = "white", size = 0.5, linetype = "solid"),
+    legend.direction = "horizontal"
+  )
 saveLastFig("fig3a")
 ## End of Fig 3a ##
 
@@ -243,17 +252,17 @@ graph_data_compare <- graph_data_full %>%
     loser_bid = `2`
   ) %>%
   mutate(
-    winner_delta_bid = (winner_bid - office_unit_price)/office_unit_price,
-    loser_delta_bid = (loser_bid - office_unit_price)/office_unit_price
+    winner_delta_bid = (winner_bid - office_unit_price) / office_unit_price,
+    loser_delta_bid = (loser_bid - office_unit_price) / office_unit_price
   ) %>%
   left_join(project_chars)
 
-ptiles_deltabid = quantile(graph_data_full$delta_bid, probs=seq(0,1,0.01))
-ptiles_deltaq = quantile(graph_data_full$delta_q, probs=seq(0,1,0.01))
-ptiles_sigmat = quantile(graph_data_full$sigma_t, probs=seq(0,1,0.01))
+ptiles_deltabid <- quantile(graph_data_full$delta_bid, probs = seq(0, 1, 0.01))
+ptiles_deltaq <- quantile(graph_data_full$delta_q, probs = seq(0, 1, 0.01))
+ptiles_sigmat <- quantile(graph_data_full$sigma_t, probs = seq(0, 1, 0.01))
 
-ptiles_deltabid_winner = quantile(graph_data_compare$winner_delta_bid, probs=seq(0,1,0.01))
-ptiles_deltabid_loser = quantile(graph_data_compare$loser_delta_bid, probs=seq(0,1,0.01))
+ptiles_deltabid_winner <- quantile(graph_data_compare$winner_delta_bid, probs = seq(0, 1, 0.01))
+ptiles_deltabid_loser <- quantile(graph_data_compare$loser_delta_bid, probs = seq(0, 1, 0.01))
 
 
 trunc_graph_data_compare <-
@@ -264,29 +273,32 @@ trunc_graph_data_compare <-
   dplyr::filter(
     loser_delta_bid > ptiles_deltabid_loser[2] & loser_delta_bid < ptiles_deltabid_loser[99]
   ) %>%
-  dplyr::filter( delta_q < ptiles_deltaq[99])
+  dplyr::filter(delta_q < ptiles_deltaq[99])
 
 trunc_graph_data_compare %>%
-  binscatter_manual( x=winner_delta_bid, y =loser_delta_bid, pos = "",
-                     controls=c("project_type_id","office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id","num_items","num_bidders","item_id_sequential")
+  binscatter_manual(
+    x = winner_delta_bid, y = loser_delta_bid, pos = "",
+    controls = c("project_type_id", "office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id", "num_items", "num_bidders", "item_id_sequential")
   ) +
-  scale_x_continuous(labels =scales::percent ) +
-  scale_y_continuous(labels =scales::percent ) +
+  scale_x_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::percent) +
   labs(
-    y =  TeX('Second Place %$\\Delta$ Bid'),
-    x =  TeX('Winner %$\\Delta$ Bid')
+    y = TeX("Second Place %$\\Delta$ Bid"),
+    x = TeX("Winner %$\\Delta$ Bid")
   ) + theme_minimal() +
-  theme(text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO)
+  theme(
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    aspect.ratio = ASPECT_RATIO
+  )
 
 saveLastFig("fig3b")
 ## End of fig 3b ##
 
 ## Fig 4a ##
 graph_data <- bridge_empirical_bid_data %>%
-  filter(rank==1) %>%
+  filter(rank == 1) %>%
   select(
     contract_no,
     item_id_sequential,
@@ -306,12 +318,12 @@ graph_data <- bridge_empirical_bid_data %>%
   ) %>%
   ungroup() %>%
   mutate(
-    delta_bid = (bid_unit_price - office_unit_price)/office_unit_price,
-    delta_q = (q_at - q_ot)/q_ot,
-    delta_bid_weight = ( (bid_unit_price * q_at / bidder_total) - (office_unit_price * q_ot / office_total))/ (office_unit_price * q_ot / office_total),
-    delta_bid_weight_model = ( (bid_unit_price * q_at_model / bidder_total) - (office_unit_price * q_ot / office_total))/ (office_unit_price * q_ot / office_total),
-    bid_weight_exante = (q_ot*bid_unit_price)/bidder_total_exante,
-    bid_weight_expost = (q_at * bid_unit_price)/bidder_total
+    delta_bid = (bid_unit_price - office_unit_price) / office_unit_price,
+    delta_q = (q_at - q_ot) / q_ot,
+    delta_bid_weight = ((bid_unit_price * q_at / bidder_total) - (office_unit_price * q_ot / office_total)) / (office_unit_price * q_ot / office_total),
+    delta_bid_weight_model = ((bid_unit_price * q_at_model / bidder_total) - (office_unit_price * q_ot / office_total)) / (office_unit_price * q_ot / office_total),
+    bid_weight_exante = (q_ot * bid_unit_price) / bidder_total_exante,
+    bid_weight_expost = (q_at * bid_unit_price) / bidder_total
   ) %>%
   left_join(project_chars)
 
@@ -323,20 +335,23 @@ graph_data %>%
   mutate(
     abs_delta_bid = sqrt((delta_bid)^2)
   ) %>%
-  binscatter_manual( y=abs_delta_bid, x =sigma_t,
-                     # pos="top right",
-                     pos="none",
-                     controls=c("delta_q","project_type_id","office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id","num_items","num_bidders","item_id_sequential")
+  binscatter_manual(
+    y = abs_delta_bid, x = sigma_t,
+    # pos="top right",
+    pos = "none",
+    controls = c("delta_q", "project_type_id", "office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id", "num_items", "num_bidders", "item_id_sequential")
   ) +
-  scale_y_continuous(labels =scales::percent ) +
+  scale_y_continuous(labels = scales::percent) +
   labs(
-    y =  TeX('| %$\\Delta$ Bid $t$ |'),
-    x =  TeX('Item Quantity Standard Deviation')
+    y = TeX("| %$\\Delta$ Bid $t$ |"),
+    x = TeX("Item Quantity Standard Deviation")
   ) + theme_minimal() +
-  theme(text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO)
+  theme(
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    aspect.ratio = ASPECT_RATIO
+  )
 
 saveLastFig("fig4a")
 
@@ -347,21 +362,24 @@ graph_data %>%
     delta_bid > ptiles_deltabid[2] & delta_bid < ptiles_deltabid[99]
   ) %>%
   dplyr::filter(sigma_t > ptiles_sigmat[2] & sigma_t < ptiles_sigmat[99]) %>%
-  binscatter_manual( y=delta_bid_weight, x =sigma_t,
-                     controls=c("project_type_id","office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id","num_items","num_bidders","item_id_sequential"),
-                     # pos = c("top right")
-                     pos = "NA"
+  binscatter_manual(
+    y = delta_bid_weight, x = sigma_t,
+    controls = c("project_type_id", "office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id", "num_items", "num_bidders", "item_id_sequential"),
+    # pos = c("top right")
+    pos = "NA"
   ) +
-  scale_y_continuous(labels =scales::percent ) +
+  scale_y_continuous(labels = scales::percent) +
   labs(
-    x = TeX('Item Quantity Standard Deviation'),
-    y = TeX('%$\\Delta$ Proportion of Revenue from Item $t$')
+    x = TeX("Item Quantity Standard Deviation"),
+    y = TeX("%$\\Delta$ Proportion of Revenue from Item $t$")
   ) +
   theme_minimal() +
-  theme(text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO)
+  theme(
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    aspect.ratio = ASPECT_RATIO
+  )
 
 saveLastFig("fig4b")
 
@@ -373,13 +391,13 @@ close_bidders <- graph_data_full %>%
   ) %>%
   ungroup() %>%
   mutate(
-    winner_total = ifelse(rank==1, total, 0)
+    winner_total = ifelse(rank == 1, total, 0)
   ) %>%
   group_by(contract_no) %>%
   mutate(
     winner_total = max(winner_total),
-    total_diff = (total-winner_total)/winner_total,
-    keep = ifelse(rank == 2 & (total_diff  < 0.1), 1, 0)
+    total_diff = (total - winner_total) / winner_total,
+    keep = ifelse(rank == 2 & (total_diff < 0.1), 1, 0)
   ) %>%
   ungroup() %>%
   filter(keep == 1)
@@ -389,44 +407,47 @@ graph_data_close_bidders <- graph_data_full %>%
     contract_no %in% close_bidders$contract_no
   )
 
-ptiles_deltabid = quantile(graph_data_close_bidders$delta_bid, probs=seq(0,1,0.01))
-ptiles_deltaq = quantile(graph_data_close_bidders$delta_q, probs=seq(0,1,0.01))
-ptiles_sigmat = quantile(graph_data_close_bidders$sigma_t, probs=seq(0,1,0.01))
+ptiles_deltabid <- quantile(graph_data_close_bidders$delta_bid, probs = seq(0, 1, 0.01))
+ptiles_deltaq <- quantile(graph_data_close_bidders$delta_q, probs = seq(0, 1, 0.01))
+ptiles_sigmat <- quantile(graph_data_close_bidders$sigma_t, probs = seq(0, 1, 0.01))
 
-myColors <- brewer.pal(5,"Set1")
+myColors <- brewer.pal(5, "Set1")
 names(myColors) <- levels(graph_data_close_bidders$rank)
-colScale <- scale_colour_manual(name = "Rank",values = myColors)
+colScale <- scale_colour_manual(name = "Rank", values = myColors)
 
 graph_data_close_bidders %>%
   dplyr::filter(
     delta_bid > ptiles_deltabid[2] & delta_bid < ptiles_deltabid[99]
   ) %>%
   dplyr::filter(delta_q < ptiles_deltaq[99]) %>%
-  binscatter_manual_by_group( y=delta_bid, x =delta_q,
-                              grouping_var = rank,
-                              # pos="",
-                              controls=c("project_type_id","office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id","num_items","num_bidders","item_id_sequential")
+  binscatter_manual_by_group(
+    y = delta_bid, x = delta_q,
+    grouping_var = rank,
+    # pos="",
+    controls = c("project_type_id", "office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id", "num_items", "num_bidders", "item_id_sequential")
   ) +
-  scale_x_continuous(labels =scales::percent ) +
-  scale_y_continuous(labels =scales::percent ) +
+  scale_x_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::percent) +
   labs(
-    y =  TeX('%$\\Delta$ Bid $t$'),
-    x =  TeX('%$\\Delta$ Quantity $t$')
+    y = TeX("%$\\Delta$ Bid $t$"),
+    x = TeX("%$\\Delta$ Quantity $t$")
   ) + theme_minimal() +
   colScale +
-  theme(text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO,
-        legend.position = c(0.26, 0.9), 
-        legend.background = element_rect(fill="white", size=0.5, linetype="solid"), 
-        legend.direction = "horizontal")
+  theme(
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    aspect.ratio = ASPECT_RATIO,
+    legend.position = c(0.26, 0.9),
+    legend.background = element_rect(fill = "white", size = 0.5, linetype = "solid"),
+    legend.direction = "horizontal"
+  )
 saveLastFig("app_fig11a")
 
 
 ## Appendix Fig 11b  ##
 graph_data <- bridge_empirical_bid_data %>%
-  filter(rank==1) %>%
+  filter(rank == 1) %>%
   select(
     contract_no,
     item_id_sequential,
@@ -446,18 +467,18 @@ graph_data <- bridge_empirical_bid_data %>%
   ) %>%
   ungroup() %>%
   mutate(
-    delta_bid = (bid_unit_price - office_unit_price)/office_unit_price,
-    delta_q = (q_at - q_ot)/q_ot,
-    delta_bid_weight = ( (bid_unit_price * q_at / bidder_total) - (office_unit_price * q_ot / office_total))/ (office_unit_price * q_ot / office_total),
-    delta_bid_weight_model = ( (bid_unit_price * q_at_model / bidder_total) - (office_unit_price * q_ot / office_total))/ (office_unit_price * q_ot / office_total),
-    bid_weight_exante = (q_ot*bid_unit_price)/bidder_total_exante,
-    bid_weight_expost = (q_at * bid_unit_price)/bidder_total
+    delta_bid = (bid_unit_price - office_unit_price) / office_unit_price,
+    delta_q = (q_at - q_ot) / q_ot,
+    delta_bid_weight = ((bid_unit_price * q_at / bidder_total) - (office_unit_price * q_ot / office_total)) / (office_unit_price * q_ot / office_total),
+    delta_bid_weight_model = ((bid_unit_price * q_at_model / bidder_total) - (office_unit_price * q_ot / office_total)) / (office_unit_price * q_ot / office_total),
+    bid_weight_exante = (q_ot * bid_unit_price) / bidder_total_exante,
+    bid_weight_expost = (q_at * bid_unit_price) / bidder_total
   ) %>%
   left_join(project_chars)
 
-ptiles_deltabid = quantile(graph_data_full$delta_bid, probs=seq(0,1,0.01))
-ptiles_deltaq = quantile(graph_data_full$delta_q, probs=seq(0,1,0.01))
-ptiles_sigmat = quantile(graph_data_full$sigma_t, probs=seq(0,1,0.01))
+ptiles_deltabid <- quantile(graph_data_full$delta_bid, probs = seq(0, 1, 0.01))
+ptiles_deltaq <- quantile(graph_data_full$delta_q, probs = seq(0, 1, 0.01))
+ptiles_sigmat <- quantile(graph_data_full$sigma_t, probs = seq(0, 1, 0.01))
 
 graph_data %>%
   dplyr::filter(
@@ -467,19 +488,22 @@ graph_data %>%
   mutate(
     abs_delta_bid = sqrt((delta_bid)^2)
   ) %>%
-  binscatter_manual( y=abs_delta_bid, x =sigma_t,
-                     pos="",
-                     controls=c("project_type_id","office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id","num_items","num_bidders","item_id_sequential")
+  binscatter_manual(
+    y = abs_delta_bid, x = sigma_t,
+    pos = "",
+    controls = c("project_type_id", "office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id", "num_items", "num_bidders", "item_id_sequential")
   ) +
-  scale_y_continuous(labels =scales::percent ) +
+  scale_y_continuous(labels = scales::percent) +
   labs(
-    y =  TeX('| %$\\Delta$ Bid $t$ |'),
-    x =  TeX('Item Quantity Standard Deviation')
+    y = TeX("| %$\\Delta$ Bid $t$ |"),
+    x = TeX("Item Quantity Standard Deviation")
   ) + theme_minimal() +
-  theme(text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO)
+  theme(
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    aspect.ratio = ASPECT_RATIO
+  )
 
 saveLastFig("app_fig11b")
 
@@ -499,8 +523,8 @@ graph_data_compare4 <- bridge_empirical_bid_data %>%
     rank
   ) %>%
   mutate(
-    delta_bid = (bid_unit_price - office_unit_price)/office_unit_price,
-    delta_q = (q_at - q_ot)/q_ot
+    delta_bid = (bid_unit_price - office_unit_price) / office_unit_price,
+    delta_q = (q_at - q_ot) / q_ot
   ) %>%
   group_by(contract_no) %>%
   mutate(
@@ -510,45 +534,48 @@ graph_data_compare4 <- bridge_empirical_bid_data %>%
   ) %>%
   ungroup() %>%
   mutate(
-    bid_weight_exante = (q_ot*bid_unit_price)/bidder_total_exante,
-    bid_weight_expost = (q_at * bid_unit_price)/bidder_total,
-    estimate_cost_weight = (q_ot * office_unit_price)/office_total
+    bid_weight_exante = (q_ot * bid_unit_price) / bidder_total_exante,
+    bid_weight_expost = (q_at * bid_unit_price) / bidder_total,
+    estimate_cost_weight = (q_ot * office_unit_price) / office_total
   ) %>%
   left_join(project_chars)
 
-ptiles_deltabid = quantile(graph_data_compare4$delta_bid, probs=seq(0,1,0.01))
-ptiles_deltaq = quantile(graph_data_compare4$delta_q, probs=seq(0,1,0.01))
-ptiles_sigmat = quantile(graph_data_compare4$sigma_t, probs=seq(0,1,0.01))
+ptiles_deltabid <- quantile(graph_data_compare4$delta_bid, probs = seq(0, 1, 0.01))
+ptiles_deltaq <- quantile(graph_data_compare4$delta_q, probs = seq(0, 1, 0.01))
+ptiles_sigmat <- quantile(graph_data_compare4$sigma_t, probs = seq(0, 1, 0.01))
 
-myColors <- brewer.pal(5,"Set1")
+myColors <- brewer.pal(5, "Set1")
 names(myColors) <- levels(graph_data_compare4$rank)
-colScale <- scale_colour_manual(name = "Rank",values = myColors)
+colScale <- scale_colour_manual(name = "Rank", values = myColors)
 
 graph_data_compare4 %>%
   dplyr::filter(
     delta_bid > ptiles_deltabid[2] & delta_bid < ptiles_deltabid[99]
   ) %>%
   dplyr::filter(delta_q < ptiles_deltaq[99]) %>%
-  binscatter( y=delta_bid, x =delta_q,
-              grouping_var = rank,
-              # pos="",
-              controls=c("project_type_id","office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id","num_items","num_bidders","item_id_sequential")
+  binscatter(
+    y = delta_bid, x = delta_q,
+    grouping_var = rank,
+    # pos="",
+    controls = c("project_type_id", "office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id", "num_items", "num_bidders", "item_id_sequential")
   ) +
-  scale_x_continuous(labels =scales::percent ) +
-  scale_y_continuous(labels =scales::percent ) +
+  scale_x_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::percent) +
   labs(
-    y =  TeX('%$\\Delta$ Bid $t$'),
-    x =  TeX('%$\\Delta$ Quantity $t$')
+    y = TeX("%$\\Delta$ Bid $t$"),
+    x = TeX("%$\\Delta$ Quantity $t$")
   ) +
   theme_minimal() +
   colScale +
-  theme(text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)),
-        aspect.ratio = ASPECT_RATIO,
-        legend.position = c(0.35, 0.9), 
-        legend.background = element_rect(fill="white", size=0.5, linetype="solid"), 
-        legend.direction = "horizontal")
+  theme(
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    aspect.ratio = ASPECT_RATIO,
+    legend.position = c(0.35, 0.9),
+    legend.background = element_rect(fill = "white", size = 0.5, linetype = "solid"),
+    legend.direction = "horizontal"
+  )
 
 saveLastFig("app_fig10a")
 
@@ -575,21 +602,21 @@ graph_data_compare4b <- graph_data_compare4 %>%
     rank4_bid = `4`
   ) %>%
   mutate(
-    winner_delta_bid = (winner_bid - office_unit_price)/office_unit_price,
-    rank2_delta_bid = (rank2_bid - office_unit_price)/office_unit_price,
-    rank3_delta_bid = (rank3_bid - office_unit_price)/office_unit_price,
-    rank4_delta_bid = (rank4_bid - office_unit_price)/office_unit_price
+    winner_delta_bid = (winner_bid - office_unit_price) / office_unit_price,
+    rank2_delta_bid = (rank2_bid - office_unit_price) / office_unit_price,
+    rank3_delta_bid = (rank3_bid - office_unit_price) / office_unit_price,
+    rank4_delta_bid = (rank4_bid - office_unit_price) / office_unit_price
   ) %>%
   left_join(project_chars)
 
-ptiles_deltabid = quantile(graph_data_compare4$delta_bid, probs=seq(0,1,0.01))
-ptiles_deltaq = quantile(graph_data_compare4$delta_q, probs=seq(0,1,0.01))
-ptiles_sigmat = quantile(graph_data_compare4$sigma_t, probs=seq(0,1,0.01))
+ptiles_deltabid <- quantile(graph_data_compare4$delta_bid, probs = seq(0, 1, 0.01))
+ptiles_deltaq <- quantile(graph_data_compare4$delta_q, probs = seq(0, 1, 0.01))
+ptiles_sigmat <- quantile(graph_data_compare4$sigma_t, probs = seq(0, 1, 0.01))
 
-ptiles_deltabid_winner = quantile(graph_data_compare4b$winner_delta_bid, probs=seq(0,1,0.01))
-ptiles_deltabid_rank2 = quantile(graph_data_compare4b$rank2_delta_bid, probs=seq(0,1,0.01), na.rm=T)
-ptiles_deltabid_rank3 = quantile(graph_data_compare4b$rank3_delta_bid, probs=seq(0,1,0.01), na.rm=T)
-ptiles_deltabid_rank4 = quantile(graph_data_compare4b$rank4_delta_bid, probs=seq(0,1,0.01), na.rm=T)
+ptiles_deltabid_winner <- quantile(graph_data_compare4b$winner_delta_bid, probs = seq(0, 1, 0.01))
+ptiles_deltabid_rank2 <- quantile(graph_data_compare4b$rank2_delta_bid, probs = seq(0, 1, 0.01), na.rm = T)
+ptiles_deltabid_rank3 <- quantile(graph_data_compare4b$rank3_delta_bid, probs = seq(0, 1, 0.01), na.rm = T)
+ptiles_deltabid_rank4 <- quantile(graph_data_compare4b$rank4_delta_bid, probs = seq(0, 1, 0.01), na.rm = T)
 
 
 trunc_graph_data_compare4 <-
@@ -606,7 +633,7 @@ trunc_graph_data_compare4 <-
   dplyr::filter(
     rank4_delta_bid > ptiles_deltabid_rank4[2] & rank4_delta_bid < ptiles_deltabid_rank4[99]
   ) %>%
-  dplyr::filter( delta_q < ptiles_deltaq[99])
+  dplyr::filter(delta_q < ptiles_deltaq[99])
 
 trunc_graph_data_compare4 <- trunc_graph_data_compare4 %>%
   rename(
@@ -624,33 +651,35 @@ trunc_graph_data_compare4 <- trunc_graph_data_compare4 %>%
   )
 
 trunc_graph_data_compare4 %>%
-  binscatter( x=winner_delta_bid, y = loser_delta_bid, grouping_var = rank_stripped,
-                     controls=c("project_type_id","office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id","num_items","num_bidders","item_id_sequential")
-                     # bins = 20
+  binscatter(
+    x = winner_delta_bid, y = loser_delta_bid, grouping_var = rank_stripped,
+    controls = c("project_type_id", "office_score_estimate", "bid_open_year", "proj_duration", "proj_manager_id", "designer_id", "engineer_id", "num_items", "num_bidders", "item_id_sequential")
+    # bins = 20
   ) +
   theme_minimal() +
-  scale_colour_manual(name = "Rank",values = myColors) +
-  scale_x_continuous(labels =scales::percent ) +
-  scale_y_continuous(labels =scales::percent ) +
+  scale_colour_manual(name = "Rank", values = myColors) +
+  scale_x_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::percent) +
   labs(
-    y =  TeX('Losing %$\\Delta$ Bid'),
-    x =  TeX('Winner %$\\Delta$ Bid')
-    ) +
+    y =  TeX("Losing %$\\Delta$ Bid"),
+    x =  TeX("Winner %$\\Delta$ Bid")
+  ) +
   theme(
-        text = element_text(size=20),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)), 
-        aspect.ratio = ASPECT_RATIO,
-        legend.position = c(0.29, 0.91), 
-        legend.background = element_rect(fill="white", size=0.5, linetype="solid"), 
-        legend.direction = "horizontal")
+    text = element_text(size = 20),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    aspect.ratio = ASPECT_RATIO,
+    legend.position = c(0.29, 0.91),
+    legend.background = element_rect(fill = "white", size = 0.5, linetype = "solid"),
+    legend.direction = "horizontal"
+  )
 
 saveLastFig("app_fig10b")
 
 
 ## Extra: Deep dive into the items underlying Fig 4a ##
 ## Online Appendix Fig 13 + Fig 14 ##
-inspect_data = graph_data %>%
+inspect_data <- graph_data %>%
   arrange(sigma_t) %>%
   select(
     q_ot,
@@ -669,18 +698,18 @@ inspect_data = graph_data %>%
     project_manager_underrun_share
   )
 
-quantile(inspect_data$sigma_t, seq(0,1,.1))
+quantile(inspect_data$sigma_t, seq(0, 1, .1))
 
-raw_most_overunning_items = inspect_data %>%
+raw_most_overunning_items <- inspect_data %>%
   filter(delta_q > quantile(inspect_data$delta_q, 0.95)) %>%
-  select(item_description,delta_q) %>%
+  select(item_description, delta_q) %>%
   # unique() %>%
   mutate(
     item_description = str_to_lower(item_description)
   )
 
 
-raw_most_variable_items = inspect_data %>%
+raw_most_variable_items <- inspect_data %>%
   filter(sigma_t > quantile(inspect_data$sigma_t, 0.95)) %>%
   select(item_description) %>%
   # unique() %>%
@@ -688,7 +717,7 @@ raw_most_variable_items = inspect_data %>%
     item_description = str_to_lower(item_description)
   )
 
-processed_most_variable_items = inspect_data %>%
+processed_most_variable_items <- inspect_data %>%
   filter(sigma_t < quantile(inspect_data$sigma_t, 0.05)) %>%
   select(item_description) %>%
   # unique() %>%
@@ -700,7 +729,7 @@ processed_most_variable_items = inspect_data %>%
     item_description = str_squish(item_description)
   )
 
-least_variable_items = inspect_data %>%
+least_variable_items <- inspect_data %>%
   filter(sigma_t < quantile(inspect_data$sigma_t, 0.05)) %>%
   select(item_description) %>%
   # unique() %>%
@@ -712,22 +741,24 @@ least_variable_items = inspect_data %>%
     item_description = str_squish(item_description)
   ) %>%
   count(item_description, sort = TRUE) %>%
-  filter(item_description!="temporary") ## This refers to "temporary bridge no [code]" which is not interpretable
+  filter(item_description != "temporary") ## This refers to "temporary bridge no [code]" which is not interpretable
 
 
 least_variable_items %>%
   dplyr::filter(n > 10) %>%
   mutate(item_description = reorder(item_description, n)) %>%
-  ggplot(aes(x = item_description, y = n)) + geom_col() +
-  coord_flip() + 
+  ggplot(aes(x = item_description, y = n)) +
+  geom_col() +
+  coord_flip() +
   labs(
     y = "Frequency Among Bottom 5% Standard Deviation Instances",
     x = "Trimmed Item Description"
-  ) + theme(aspect.ratio = ASPECT_RATIO)
+  ) +
+  theme(aspect.ratio = ASPECT_RATIO)
 
 saveLastFig("app_fig13")
 
-most_variable_items = inspect_data %>%
+most_variable_items <- inspect_data %>%
   filter(sigma_t > quantile(inspect_data$sigma_t, 0.95)) %>%
   select(item_description) %>%
   mutate(
@@ -743,12 +774,14 @@ most_variable_items = inspect_data %>%
 most_variable_items %>%
   filter(n > 10) %>%
   mutate(item_description = reorder(item_description, n)) %>%
-  ggplot(aes(x = item_description, y = n)) + geom_col() +
-  coord_flip() + 
+  ggplot(aes(x = item_description, y = n)) +
+  geom_col() +
+  coord_flip() +
   labs(
     y = "Frequency Among Top 5% Standard Deviation Instances",
     x = "Trimmed Item Description"
-  ) + theme(aspect.ratio = ASPECT_RATIO)
+  ) +
+  theme(aspect.ratio = ASPECT_RATIO)
 
 saveLastFig("app_fig14")
 
