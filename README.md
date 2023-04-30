@@ -348,7 +348,7 @@ Step 3 produces figures and tables that summarize estimates for bidder efficienc
 - Table 3b: `outputs/estimation_results/table3b.tex`
 - Table 4a: `outputs/estimation_results/table4a.tex`
 - Table 4b: `outputs/estimation_results/table4b.tex`
-- Table 11: `outputs/estimation_results/app_table11.tex`
+- Table 11 (appears as Figure D.4. in paper): `outputs/estimation_results/app_table11.tex`
 
 **Figures**:
 
@@ -436,8 +436,8 @@ The script `presentation/N_appendix_estimation_results.R` produces additional fi
 **Tables**:
 
 - Table 8: `outputs/estimation_results/app_table8.tex`
-- Table 9: `outputs/estimation_results/app_table9.tex`
-- Table 10: `outputs/estimation_results/app_table10.tex`
+- Table 9 (appears as Figure D.1. in paper): `outputs/estimation_results/app_table9.tex`
+- Table 10 (appears as Figure D.2. in paper): `outputs/estimation_results/app_table10.tex`
 
 **Figures**:
 
